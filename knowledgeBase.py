@@ -1,0 +1,177 @@
+from logic import Sentence, Symbol, Not, And, Or, Implication, model_check
+from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream, MoveFoward, TurnLeft, TurnRight, Grab, Shoot
+
+
+class KnowledgeBase:
+    '''
+    Contain the KB of the problem.
+    It has attribute:
+        - clauses: Logic connective And(sentence1, sentence2,..., sentenceK)
+    '''
+
+    def __init__(self, knowledge=None, symbols=None, visited=set([(1,1)]), N=8):
+        self.width = N
+        self.height = N
+        if symbols is None:
+            symbols = dict()
+        self.symbols = symbols
+        if knowledge is None:
+            self.clauses = And()
+        elif isinstance(knowledge, KnowledgeBase):
+            self.clauses = knowledge.clauses
+        elif isinstance(knowledge, Sentence):
+            self.clauses = And(knowledge)
+        # Initialize symbols for (1,1)
+        self.symbols[('Wumpus', 1, 1)] = Symbol('Wumpus_1_1')
+        self.symbols[('Pit', 1, 1)] = Symbol('Pit_1_1')
+        self.clauses.add(Not(self.symbols[('Wumpus', 1, 1)]))
+        self.clauses.add(Not(self.symbols[('Pit', 1, 1)]))
+        self.visited = visited
+
+    def __iadd__(self, sentence):
+        if Sentence.validate(sentence):
+            self.clauses.add(sentence)
+        return self
+
+    def update_action_sentence(self, action):
+        actions = ["MoveForward", "TurnLeft", "TurnRight", "Grab", "Shoot"]
+        for a in actions:
+            self.symbols[(a,)] = Symbol(a)
+            if action == a:
+                self.clauses.add(self.symbols[(a,)])
+            else:
+                self.clauses.add(Not(self.symbols[(a,)]))
+
+    def update_percept_sentence(self, pos, percept):
+        y, x = pos
+        # Mark current position as safe
+        self.symbols[('SafePosition', y, x)] = Symbol(f'SafePosition_{y}_{x}')
+        self.clauses.add(self.symbols[('SafePosition', y, x)])
+        if ('Pit', y, x) not in self.symbols:
+            self.symbols[('Pit', y, x)] = Symbol(f'Pit_{y}_{x}')
+        if ('Wumpus', y, x) not in self.symbols:
+            self.symbols[('Wumpus', y, x)] = Symbol(f'Wumpus_{y}_{x}')
+
+        # just update Not Pit or Wumpus when the pos is not in visited positions' list
+        # in advanced setting (Wumpus Move) => should fix this
+        if pos not in self.visited:
+            self.clauses.add(Not(self.symbols[('Pit', y, x)]))
+            self.clauses.add(Not(self.symbols[('Wumpus', y, x)]))
+
+        # Things perceived
+        # Glitter, Bump, Stench, Breeze, Scream
+        flags = [0, 0, 0, 0, 0]
+        if isinstance(percept, Glitter):
+            flags[0] = 1
+            if ('Glitter', y, x) not in self.symbols:
+                self.symbols[('Glitter', y, x)] = Symbol(f'Glitter_{y}_{x}')
+            self.clauses.add(self.symbols[('Glitter', y, x)])
+        if isinstance(percept, Bump):
+            flags[1] = 1
+            if ('Bump', y, x) not in self.symbols:
+                self.symbols[('Bump', y, x)] = Symbol(f'Bump_{y}_{x}')
+            self.clauses.add(self.symbols[('Bump', y, x)])
+        if isinstance(percept, Stench):
+            flags[2] = 1
+            if ('Stench', y, x) not in self.symbols:
+                self.symbols[('Stench', y, x)] = Symbol(f'Stench_{y}_{x}')
+            self.clauses.add(self.symbols[('Stench', y, x)])
+        if isinstance(percept, Breeze):
+            flags[3] = 1
+            if ('Breeze', y, x) not in self.symbols:
+                self.symbols[('Breeze', y, x)] = Symbol(f'Breeze_{y}_{x}')
+            self.clauses.add(self.symbols[('Breeze', y, x)])
+        if isinstance(percept, Scream):
+            flags[4] = 1
+            if ('Scream', y, x) not in self.symbols:
+                self.symbols[('Scream', y, x)] = Symbol(f'Scream_{y}_{x}')
+            self.clauses.add(self.symbols[('Scream', y, x)])
+
+        # Things not perceived
+        for i in range(len(flags)):
+            if flags[i] == 0:
+                if i == 0:
+                    if ('Glitter', y, x) not in self.symbols:
+                        self.symbols[('Glitter', y, x)] = Symbol(f'Glitter_{y}_{x}')
+                    self.clauses.add(Not(self.symbols[('Glitter', y, x)]))
+                elif i == 1:
+                    if ('Bump', y, x) not in self.symbols:
+                        self.symbols[('Bump', y, x)] = Symbol(f'Bump_{y}_{x}')
+                    self.clauses.add(Not(self.symbols[('Bump', y, x)]))
+                elif i == 2:
+                    if ('Stench', y, x) not in self.symbols:
+                        self.symbols[('Stench', y, x)] = Symbol(f'Stench_{y}_{x}')
+                    self.clauses.add(Not(self.symbols[('Stench', y, x)]))
+                elif i == 3:
+                    if ('Breeze', y, x) not in self.symbols:
+                        self.symbols[('Breeze', y, x)] = Symbol(f'Breeze_{y}_{x}')
+                    self.clauses.add(Not(self.symbols[('Breeze', y, x)]))
+                elif i == 4:
+                    if ('Scream', y, x) not in self.symbols:
+                        self.symbols[('Scream', y, x)] = Symbol(f'Scream_{y}_{x}')
+                    self.clauses.add(Not(self.symbols[('Scream', y, x)]))
+            else:
+                if i == 1:
+                    pass
+                elif i == 2:  # Stench
+                    consequents = Or()
+                    if y > 1:
+                        if ('Wumpus', y - 1, x) not in self.symbols:
+                            self.symbols[('Wumpus', y - 1, x)] = Symbol(f'Wumpus_{y-1}_{x}')
+                        consequents.add(self.symbols[('Wumpus', y-1, x)])
+
+                    if ('Wumpus', y + 1, x) not in self.symbols:
+                        self.symbols[('Wumpus', y + 1, x)] = Symbol(f'Wumpus_{y+1}_{x}')
+                    consequents.add(self.symbols[('Wumpus', y + 1, x)])
+
+                    if x > 1:
+                        if ('Wumpus', y, x - 1) not in self.symbols:
+                            self.symbols[('Wumpus', y, x - 1)] = Symbol(f'Wumpus_{y}_{x-1}')
+                        consequents.add(self.symbols[('Wumpus', y, x-1)])
+
+                    if ('Wumpus', y, x + 1) not in self.symbols:
+                        self.symbols[('Wumpus', y, x + 1)] = Symbol(f'Wumpus_{y}_{x+1}')
+                    consequents.add(self.symbols[('Wumpus', y, x+1)])
+
+                    if consequents.disjuncts:
+                        self.clauses.add(Implication(self.symbols[('Stench', y, x)], consequents))
+                elif i == 3:  # Breeze
+                    consequents = Or()
+                    if y > 1:
+                        if ('Pit', y - 1, x) not in self.symbols:
+                            self.symbols[('Pit', y-1, x)] = Symbol(f'Pit_{y-1}_{x}')
+                        consequents.add(self.symbols[('Pit', y-1, x)])
+
+                    if ('Pit', y + 1, x) not in self.symbols:
+                        self.symbols[('Pit', y+1, x)] = Symbol(f'Pit_{y+1}_{x}')
+                    consequents.add(self.symbols[('Pit', y+1, x)])
+
+                    if x > 1:
+                        if ('Pit', y, x - 1) not in self.symbols:
+                            self.symbols[('Pit', y, x-1)] = Symbol(f'Pit_{y}_{x-1}')
+                        consequents.add(self.symbols[('Pit', y, x-1)])
+
+                    if ('Pit', y, x + 1) not in self.symbols:
+                        self.symbols[('Pit', y, x+1)] = Symbol(f'Pit_{y}_{x+1}')
+                    consequents.add(self.symbols[('Pit', y, x+1)])
+
+                    if consequents.disjuncts:
+                        self.clauses.add(Implication(self.symbols[('Breeze', y, x)], consequents))
+                elif i == 4:
+                    pass
+
+    # def add_temporal_sentence(self):
+    #     for x in 
+
+
+    # Inference with the query
+    def ask(self, query: Sentence) -> bool:
+        return model_check(self.clauses, query)
+
+
+def build_init_kb(N, environment):
+    kb = KnowledgeBase(N=N)
+    percepts = environment.percept((1, 1))
+    for percept in percepts:
+        kb.update_percept_sentence((1, 1), percept)
+    return kb
