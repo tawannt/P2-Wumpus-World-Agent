@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 class Sentence():
     """ A logic sentence """
     def evaluate(self, model):
@@ -231,6 +233,19 @@ class Biconditional(Sentence):
     def symbols(self):
         return set.union(self.left.symbols(), self.right.symbols())
 
+
+# def forward_chaining(kb, query):
+#     # get facts (not including 'negative fact')
+#     facts = [clause for clause in kb.clauses.conjuncts if isinstance(clause, Symbol)]
+#     inferred = defaultdict(bool)
+#     # dict -> the number symbol in premise
+#     count = dict()
+#     for c in kb.clauses:
+#         if isinstance(c, Implication):
+#             if isinstance(c.antecedent, And):
+#                 count[c] = len(c.antecedent.conjuncts)
+#             else:
+#                 count[c] = 1
 
 def model_check(knowledge, query):
     """Checks if knowledge base entails query."""

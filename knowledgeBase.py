@@ -55,7 +55,7 @@ class KnowledgeBase:
         y, x = pos[:2]
         # Mark current position as safe
         self.symbols[('SafePosition', y, x)] = Symbol(f'SafePosition_{y}_{x}')
-        self.clauses.add(self.symbols[('SafePosition', y, x)])
+        # self.clauses.add(self.symbols[('SafePosition', y, x)])
         if ('Pit', y, x) not in self.symbols:
             self.symbols[('Pit', y, x)] = Symbol(f'Pit_{y}_{x}')
         if ('Wumpus', y, x) not in self.symbols:
@@ -243,7 +243,4 @@ def build_init_kb(N, environment):
     percepts = environment.percept((1, 1))
     kb.update_percept_sentence((1, 1), percepts)
     return kb
-
-
-
 
