@@ -267,3 +267,33 @@ def model_check(knowledge, query):
     symbols = set.union(knowledge.symbols(), query.symbols())
     # Check that knowledge entails query
     return check_all(knowledge, query, symbols, dict())
+
+
+
+def move_forward(step):
+    return Symbol(f'MoveForward_{step}')
+
+
+def shoot(from_location, direction, step):
+    y, x = from_location[:2]
+    return Symbol(f'ShootFrom_{y}_{x}_{direction}_{step}')
+
+def grab(from_location, step):
+    y, x = from_location[:2]
+    return Symbol(f'Grab_{y}_{x}_{step}')
+# def turn_left(from_location):
+#     y, x = from_location[:2]
+#     return Symbol(f'TurnLeft_{y}_{x}')
+def turn_left(step):
+    return Symbol(f'TurnLeft_{step}')
+
+
+# def turn_right(from_location):
+#     y, x = from_location[:2]
+#     return Symbol(f'TurnRight_{y}_{x}')
+def turn_right(step):
+    return Symbol(f'TurnRight_{step}')
+
+
+def ok_to_move(x, y):
+    return Symbol(f'OK_{y}_{x}')

@@ -1,4 +1,4 @@
-from logic import Sentence, Symbol, Not, And, Or, Implication, model_check
+from logic import Sentence, Symbol, Not, And, Or, Implication, model_check, move_forward, shoot, grab, turn_left, turn_right, ok_to_move
 from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream, MoveFoward, TurnLeft, TurnRight, Grab, Shoot
 
 
@@ -31,21 +31,28 @@ class KnowledgeBase:
         # self.add_temporal_sentence()
 
     def __iadd__(self, sentence):
-        if Sentence.validate(sentence):
+        if Sentence.validate(sentence) and sentence not in self.clauses:
             self.clauses.add(sentence)
         return self
 
-    def update_action_sentence(self, action):
-        actions = ["MoveForward", "TurnLeft", "TurnRight", "Grab", "Shoot"]
+    def update_action_sentence(self, agent, action, step):
+        '''
+        Input:
+            agent: The agent do the action.
+            action: An action that agent do.
+            step: The step that agent do.
+        '''
+        actions = [move_forward(step), turn_left(step), turn_right(step), grab(agent.location, step), shoot(agent.location, agent.direction.direction, step)]
         for a in actions:
-            self.symbols[(a,)] = Symbol(a)
+            self.symbols[a.name] = a
             if action == a:
-                self.clauses.add(self.symbols[(a,)])
-            else:
-                self.clauses.add(Not(self.symbols[(a,)]))
+                self.clauses.add(self.symbols[a.name])
+            # else:
+            #     if 'Grab' not in a.name and 'Shoot' not in a.name:
+            #         self.clauses.add(Not(self.symbols[a.name]))
 
     def update_percept_sentence(self, pos, percepts):
-        y, x = pos
+        y, x = pos[:2]
         # Mark current position as safe
         self.symbols[('SafePosition', y, x)] = Symbol(f'SafePosition_{y}_{x}')
         self.clauses.add(self.symbols[('SafePosition', y, x)])
@@ -236,3 +243,7 @@ def build_init_kb(N, environment):
     percepts = environment.percept((1, 1))
     kb.update_percept_sentence((1, 1), percepts)
     return kb
+
+
+
+

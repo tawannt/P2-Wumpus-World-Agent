@@ -2,7 +2,6 @@
 class Thing():
     position = tuple()
 
-
 class Gold(Thing):
 
     def __eq__(self, rhs):

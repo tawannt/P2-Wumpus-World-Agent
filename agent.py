@@ -5,6 +5,7 @@ from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump,
 
 class Agent(Thing):
     alive = True
+    location = tuple()
 
 # Fixed Explorer
 class Explorer(Agent):
@@ -20,10 +21,16 @@ class Explorer(Agent):
             visited = set([(1, 1)])
         self.kb = kb
         self.visited = visited
-        self.current_pos = pos
+        self.location = pos
 
-    def mark_safe_cell(self, pos):
-        pass
+    def mark_safe_location(self, pos):
+        '''Check the input location is safe or not'''
+        y, x = pos[:2]
+        # # TODO: if "add_temporal_sentence" => remove this
+        # if ('Pit', y, x) not in self.kb.symbols and ('Wumpus', y, x) not in self.kb.symbols:
+        #     return True
+        # if 
+        # return self.kb.ask(And(Not((self.kb.symbols[('Pit', 2, 1)])), Not(self.kb.symbols)))
 
     def can_grab(self, thing):
         return thing.__class__ == Gold

@@ -53,20 +53,26 @@ class Direction:
                 self.L: Direction(self.R),
             }.get(heading, None)
 
+    def __iadd__(self, heading):
+        new_dir = self + heading
+        if new_dir:
+            self.direction = new_dir.direction
+        return self
+
     def move_forward(self, from_location):
         """
         >>> d = Direction('up')
-        >>> l1 = d.move_forward((0, 0))
+        >>> l1 = d.move_forward((1, 1))
         >>> l1
-        (0, 1)
+        (2, 1)
         >>> d = Direction(Direction.R)
-        >>> l1 = d.move_forward((0, 0))
+        >>> l1 = d.move_forward((1, 1))
         >>> l1
-        (1, 0)
+        (1, 2)
         >>> d = Direction(Direction.D)
-        >>> l1 = d.move_forward((0, 0))
+        >>> l1 = d.move_forward((2, 1))
         >>> l1
-        (0, -1)
+        (1, 1)
         """
         # get the iterable class to return
         # e.g, input is tuple -> use iclass to get tuple, then output is also tuple

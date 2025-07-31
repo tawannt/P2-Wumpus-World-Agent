@@ -16,6 +16,7 @@ class WumpusEnvironment:
         self.status = "ongoing"
         self.gold_taken = False
         self.pit_pos = []
+        self.action_counts = 0
 
         self.add_wall()
 
@@ -27,13 +28,13 @@ class WumpusEnvironment:
                 if random.random() < self.pit_probability:
                     self.board[y][x].append(Pit())
                     self.pit_pos.append((y, x))
-                    if x > 1 and not any(isinstance(e, Breeze) for e in self.board[y][x - 1]):
+                    if x > 1 and not any(isinstance(e, Breeze) or isinstance(e, Pit) for e in self.board[y][x - 1]):
                         self.board[y][x - 1].append(Breeze())
-                    if x < self.width and not any(isinstance(e, Breeze) for e in self.board[y][x + 1]):
+                    if x < self.width and not any(isinstance(e, Breeze) or isinstance(e, Pit) for e in self.board[y][x + 1]):
                         self.board[y][x + 1].append(Breeze())
-                    if y > 1 and not any(isinstance(e, Breeze) for e in self.board[y - 1][x]):
+                    if y > 1 and not any(isinstance(e, Breeze) or isinstance(e, Pit) for e in self.board[y - 1][x]):
                         self.board[y - 1][x].append(Breeze())
-                    if y < self.height and not any(isinstance(e, Breeze) for e in self.board[y + 1][x]):
+                    if y < self.height and not any(isinstance(e, Breeze) or isinstance(e, Pit) for e in self.board[y + 1][x]):
                         self.board[y + 1][x].append(Breeze())
 
         self.wumpus_pos = []
@@ -46,13 +47,17 @@ class WumpusEnvironment:
                 break
             self.board[y][x].append(Wumpus())
             self.wumpus_pos.append((y, x))
-            if x > 1 and not any(isinstance(e, Stench) for e in self.board[y][x - 1]):
+            if x > 1 and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y][x - 1]):
+            # if x > 1:
                 self.board[y][x - 1].append(Stench())
-            if x < self.width and not any(isinstance(e, Stench) for e in self.board[y][x + 1]):
+            if x < self.width and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y][x + 1]):
+            # if x < self.width:
                 self.board[y][x + 1].append(Stench())
-            if y > 1 and not any(isinstance(e, Stench) for e in self.board[y - 1][x]):
+            if y > 1 and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y - 1][x]):
+            # if y > 1:
                 self.board[y - 1][x].append(Stench())
-            if y < self.height and not any(isinstance(e, Stench) for e in self.board[y + 1][x]):
+            if y < self.height and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y + 1][x]):
+            # if y < self.height:
                 self.board[y + 1][x].append(Stench())
 
         used_pos = self.wumpus_pos + self.pit_pos
@@ -68,25 +73,30 @@ class WumpusEnvironment:
         
 
     def add_wall(self):
-        for y in range(self.height + 2):
-            self.board[y][0].append(Wall())
-            self.board[y][self.width + 1].append(Wall())
+        for i in range(1, self.height + 1):
+            self.board[i][0].append(Wall())
+            self.board[i][self.width + 1].append(Wall())
 
-        for x in range(self.width + 2):
-            self.board[0][x].append(Wall())
-            self.board[self.height + 1][x].append(Wall())
+            self.board[0][i].append(Wall())
+            self.board[self.height + 1][i].append(Wall())
+
+        self.board[0][0].append(Wall())
+        self.board[0][self.width + 1].append(Wall())
+        self.board[self.height + 1][0].append(Wall())
+        self.board[self.height + 1][self.width + 1].append(Wall())
 
     def print_board(self):
         for y in range(self.height + 1, -1, -1):
             for x in range(self.width + 2):
-                if y == 0 or x == 0 or y == self.height + 1 or x == self.width + 1:
-                    print("[#########]", end=" ")
-                    continue
+                # if y == 0 or x == 0 or y == self.height + 1 or x == self.width + 1:
+                #     print("[#########]", end=" ")
+                #     continue
                 cell = self.board[y][x]
                 if not cell:
-                    print("[    .    ]", end=" ")
+                    print("[...........]", end=" ")
                 else:
                     symbols = []
+                    
                     for t in cell:
                         if isinstance(t, Explorer):
                             d = t.direction.direction
@@ -103,10 +113,92 @@ class WumpusEnvironment:
                             symbols.append("Br")
                         elif isinstance(t, Glitter):
                             symbols.append("Gl")
-                    print(f"[{' '.join(symbols):<9}]", end=" ")
+                        elif isinstance(t, Wall):
+                            symbols.append("###########")
+                    print(f"[{' '.join(symbols):<11}]", end=" ")
             print()
 
+    def is_in_map(self, pos):
+        y, x = pos[:2]
+        return True if y > 0 and y <= self.height and x > 0 and x <= self.width else False
+
+    def update_stench(self):
+        '''Update stench after wumpus's death'''
+        # Clear all Stench
+        for y in range(self.height):
+            for x in range(self.width):
+                self.board[y][x] = [t for t in self.board[y][x] if not isinstance(t, Stench)]
+
+        # Add Stench for each Wumpus
+        for x, y in self.wumpus_pos:
+            if x > 1 and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y][x - 1]):
+                self.board[y][x - 1].append(Stench())
+            if x < self.width and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y][x + 1]):
+                self.board[y][x + 1].append(Stench())
+            if y > 1 and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y - 1][x]):
+                self.board[y - 1][x].append(Stench())
+            if y < self.height and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y + 1][x]):
+                self.board[y + 1][x].append(Stench())
+
     
+    def exe_action(self, agent, pos, action):
+        y, x = pos[:2]
+        arrow_direction = Direction(agent.direction.direction)
+        if isinstance(agent, Explorer) and self.in_danger(agent):
+            return
+        percepts = []
+        agent.bump = False
+        if action == 'TurnRight':
+            agent.direction += Direction.R
+            agent.performance -= 1
+        elif action == 'TurnLeft':
+            agent.direction += Direction.L
+            agent.performance -= 1
+        elif action == 'MoveForward':
+            location = agent.direction.move_forward(agent.location)
+            agent.bump = not self.is_in_map(location)
+            if not agent.bump:
+                self.board[agent.location[0]][agent.location[1]].remove(agent)
+                agent.location = location
+                self.board[agent.location[0]][agent.location[1]].append(agent)
+            agent.performance -= 1
+            percepts.append(Bump())
+        elif action == 'Grab':
+            grabbing = False
+            for thing in self.board[y][x]:
+                if isinstance(thing, Gold):
+                    agent.holding.append(thing)
+                    print("Grabbing ", thing.__class__.__name__)
+                    self.board[y][x].remove(thing)
+                    agent.performance += 10
+                    grabbing = True
+            if not grabbing:
+                print("There is no Gold in this position to Grab.")
+        elif action == 'Climb':
+            if agent.location == (1, 1):  # Agent can only climb out of (1,1)
+                agent.performance += 1000 if Gold() in agent.holding else 0
+                self.board[y][x].remove(agent)
+        elif action == 'Shoot':
+            """The arrow travels straight down the path the agent is facing"""
+            if agent.has_arrow:
+                agent.performance -= 10
+                arrow_travel = arrow_direction.move_forward(agent.location)
+                while self.is_in_map(arrow_travel):
+                    arrow_y, arrow_x = arrow_travel[:2]
+                    wumpuses = [thing for thing in self.board[arrow_y][arrow_x]
+                              if isinstance(thing, Wumpus)]
+                    if len(wumpuses):
+                        wumpuses[0].alive = False
+                        self.k_wumpuses -= 1
+                        self.wumpus_pos.remove((arrow_y, arrow_x))
+                        self.board[arrow_y][arrow_x].remove(wumpuses[0])
+                        percepts.append(Scream())
+                        break
+                    arrow_travel = arrow_direction.move_forward(arrow_travel)
+                agent.has_arrow = False
+        return percepts
+
+
     def percept(self, pos):
         #TODO: handle empty perceptions -> done
         y, x = pos[:2]
@@ -115,7 +207,7 @@ class WumpusEnvironment:
     
     def in_danger(self, agent):
         """Check if Explorer is in danger (Pit or Wumpus), if he is, kill him"""
-        y, x = agent.current_pos[:2]
+        y, x = agent.location[:2]
         for thing in self.board[y][x]:
             if isinstance(thing, Pit) or (isinstance(thing, Wumpus) and thing.alive):
                 agent.alive = False
@@ -139,101 +231,3 @@ class WumpusEnvironment:
             print("Explorer climbed out {}."
                   .format("with Gold [+1000]!" if self.gold_taken else "without Gold [+0]"))
         return True
-
-    def kill_wumpus(self, agent):
-        killed = False
-        new_wumpus_pos = self.wumpus_pos.copy()
-        current_pos = agent.current_pos
-        while self.is_inbounds(current_pos):
-            y, x = current_pos
-            if any(isinstance(thing, Wumpus) for thing in self.board[y][x]):
-                killed = True
-                self.k_wumpuses -= 1
-                self.board[y][x] = [t for t in self.board[y][x] if not isinstance(t, Wumpus)]
-                new_wumpus_pos.remove((y, x))
-                agent.has_arrow = False
-                self.board[y][x].append(Scream())
-                # Remove Stench only if no other Wumpus contributes
-                adjacent_cells = []
-                if x > 0:
-                    adjacent_cells.append((x - 1, y))
-                if x < self.width:
-                    adjacent_cells.append((x + 1, y))
-                if y > 0:
-                    adjacent_cells.append((y, x - 1))
-                if y < self.height:
-                    adjacent_cells.append((y, x + 1))
-                for ax, ay in adjacent_cells:
-                    keep_stench = any((wx, wy) != (y, x) and
-                                      ((wx == ax and abs(wy - ay) <= 1) or (wy == ay and abs(wx - ax) <= 1))
-                                      for wx, wy in self.wumpus_pos)
-                    if not keep_stench and any(isinstance(e, Stench) for e in self.board[ay][ax]):
-                        self.board[ay][ax] = [e for e in self.board[ay][ax] if not isinstance(e, Stench)]
-            current_pos = agent.direction.move_forward(current_pos)
-        self.wumpus_pos = new_wumpus_pos
-        return killed
-
-    def is_inbounds(self, pos):
-        y, x = pos
-        return 0 <= x < self.width and 0 <= y < self.height
-
-    def in_danger(self, agent):
-        y, x = agent.current_pos
-        if any(isinstance(t, Wumpus) for t in self.board[y][x]):
-            agent.killed_by = "Wumpus"
-            return True
-        if any(isinstance(t, Pit) for t in self.board[y][x]):
-            agent.killed_by = "Pit"
-            return True
-        return False
-
-    def execute_action(self, agent: Explorer, action: str):
-        # Clear temporary percepts
-        y, x = agent.current_pos
-        self.board[y][x] = [t for t in self.board[y][x] if not isinstance(t, (Bump, Scream))]
-        # Check for danger
-        if self.in_danger(agent):
-            self.game_over = True
-            return ([], True, "dead")
-        percepts = []
-        game_over = False
-        status = "ongoing"
-        if action == "MoveForward":
-            new_pos = agent.direction.move_forward(agent.current_pos)
-            if not self.is_inbounds(new_pos):
-                percepts.append(Bump())
-                agent.performance -= 1
-            else:
-                self.board[agent.current_pos[1]][agent.current_pos[0]] = [t for t in self.board[agent.current_pos[1]][agent.current_pos[0]] if not isinstance(t, Explorer)]
-                agent.current_pos = new_pos
-                self.board[new_pos[1]][new_pos[0]].append(agent)
-                agent.performance -= 1
-                if self.in_danger(agent):
-                    self.game_over = True
-                    return ([], True, "dead")
-        elif action == "TurnLeft":
-            agent.direction = agent.direction + "left"
-            agent.performance -= 1
-        elif action == "TurnRight":
-            agent.direction = agent.direction + "right"
-            agent.performance -= 1
-        elif action == "Grab":
-            if any(isinstance(t, Gold) for t in self.board[agent.current_pos[1]][agent.current_pos[0]]):
-                agent.holding.append(Gold())
-                self.board[agent.current_pos[1]][agent.current_pos[0]] = [t for t in self.board[agent.current_pos[1]][agent.current_pos[0]] if not isinstance(t, (Gold, Glitter))]
-                agent.performance += 1000
-            agent.performance -= 1
-        elif action == "Shoot":
-            agent.performance -= 1
-            if agent.has_arrow:
-                agent.performance -= 10
-                self.kill_wumpus(agent)
-        elif action == "ClimbOut":
-            if agent.current_pos == (0,0) and any(isinstance(t, Gold) for t in agent.holding):
-                agent.performance += 1000
-                self.board[agent.current_pos[1]][agent.current_pos[0]] = [t for t in self.board[agent.current_pos[1]][agent.current_pos[0]] if not isinstance(t, Explorer)]
-                game_over = True
-                status = "climbed_out"
-            agent.performance -= 1
-        percepts.extend(self.percept(agent.current_pos))
-        return (percepts, game_over, status)
