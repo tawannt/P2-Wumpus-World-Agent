@@ -11,9 +11,10 @@ class WumpusEnvironment:
         self.k_wumpuses = K_wumpuses
         self.pit_probability = pit_probability
         self.board = [[[] for _ in range(self.width + 2)] for _ in range(self.height + 2)]
+        self.agents = []
         self.game_over = False
         self.status = "ongoing"
-
+        self.gold_taken = False
         self.pit_pos = []
 
         self.add_wall()
@@ -107,7 +108,7 @@ class WumpusEnvironment:
 
     
     def percept(self, pos):
-        #TODO: handle empty perceptions
+        #TODO: handle empty perceptions -> done
         y, x = pos[:2]
         percepts = set(e for e in self.board[y][x] if isinstance(e, (Breeze, Stench, Glitter, Scream, Bump)))
         return list(percepts)
@@ -122,6 +123,22 @@ class WumpusEnvironment:
                 agent.killed_by = thing.__class__.__name__
                 return True
         return False
+    
+    def is_end(self):
+        """The game is over when the Explorer is killed
+        or if he climbs out of the cave only at (1,1)."""
+        explorer = [agent for agent in self.agents if isinstance(agent, Explorer)]
+        if len(explorer):
+            if explorer[0].alive:
+                print("Exporer is alive.")
+                return False
+            else:
+                print(f"Death by {explorer[0].killed_by} [-1000].")
+        else:
+            #TODO ADD ACTION OUT -> remove agent from world
+            print("Explorer climbed out {}."
+                  .format("with Gold [+1000]!" if self.gold_taken else "without Gold [+0]"))
+        return True
 
     def kill_wumpus(self, agent):
         killed = False

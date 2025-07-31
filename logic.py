@@ -265,6 +265,5 @@ def model_check(knowledge, query):
 
     # Get all symbols in both knowledge and query
     symbols = set.union(knowledge.symbols(), query.symbols())
-
     # Check that knowledge entails query
     return check_all(knowledge, query, symbols, dict())

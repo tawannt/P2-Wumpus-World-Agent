@@ -28,6 +28,8 @@ class KnowledgeBase:
         self.clauses.add(Not(self.symbols[('Pit', 1, 1)]))
         self.visited = visited
 
+        # self.add_temporal_sentence()
+
     def __iadd__(self, sentence):
         if Sentence.validate(sentence):
             self.clauses.add(sentence)
@@ -42,7 +44,7 @@ class KnowledgeBase:
             else:
                 self.clauses.add(Not(self.symbols[(a,)]))
 
-    def update_percept_sentence(self, pos, percept):
+    def update_percept_sentence(self, pos, percepts):
         y, x = pos
         # Mark current position as safe
         self.symbols[('SafePosition', y, x)] = Symbol(f'SafePosition_{y}_{x}')
@@ -57,35 +59,35 @@ class KnowledgeBase:
         if pos not in self.visited:
             self.clauses.add(Not(self.symbols[('Pit', y, x)]))
             self.clauses.add(Not(self.symbols[('Wumpus', y, x)]))
-
-        # Things perceived
-        # Glitter, Bump, Stench, Breeze, Scream
         flags = [0, 0, 0, 0, 0]
-        if isinstance(percept, Glitter):
-            flags[0] = 1
-            if ('Glitter', y, x) not in self.symbols:
-                self.symbols[('Glitter', y, x)] = Symbol(f'Glitter_{y}_{x}')
-            self.clauses.add(self.symbols[('Glitter', y, x)])
-        if isinstance(percept, Bump):
-            flags[1] = 1
-            if ('Bump', y, x) not in self.symbols:
-                self.symbols[('Bump', y, x)] = Symbol(f'Bump_{y}_{x}')
-            self.clauses.add(self.symbols[('Bump', y, x)])
-        if isinstance(percept, Stench):
-            flags[2] = 1
-            if ('Stench', y, x) not in self.symbols:
-                self.symbols[('Stench', y, x)] = Symbol(f'Stench_{y}_{x}')
-            self.clauses.add(self.symbols[('Stench', y, x)])
-        if isinstance(percept, Breeze):
-            flags[3] = 1
-            if ('Breeze', y, x) not in self.symbols:
-                self.symbols[('Breeze', y, x)] = Symbol(f'Breeze_{y}_{x}')
-            self.clauses.add(self.symbols[('Breeze', y, x)])
-        if isinstance(percept, Scream):
-            flags[4] = 1
-            if ('Scream', y, x) not in self.symbols:
-                self.symbols[('Scream', y, x)] = Symbol(f'Scream_{y}_{x}')
-            self.clauses.add(self.symbols[('Scream', y, x)])
+        for percept in percepts:
+            # Things perceived
+            # Glitter, Bump, Stench, Breeze, Scream
+            if isinstance(percept, Glitter):
+                flags[0] = 1
+                if ('Glitter', y, x) not in self.symbols:
+                    self.symbols[('Glitter', y, x)] = Symbol(f'Glitter_{y}_{x}')
+                self.clauses.add(self.symbols[('Glitter', y, x)])
+            if isinstance(percept, Bump):
+                flags[1] = 1
+                if ('Bump', y, x) not in self.symbols:
+                    self.symbols[('Bump', y, x)] = Symbol(f'Bump_{y}_{x}')
+                self.clauses.add(self.symbols[('Bump', y, x)])
+            if isinstance(percept, Stench):
+                flags[2] = 1
+                if ('Stench', y, x) not in self.symbols:
+                    self.symbols[('Stench', y, x)] = Symbol(f'Stench_{y}_{x}')
+                self.clauses.add(self.symbols[('Stench', y, x)])
+            if isinstance(percept, Breeze):
+                flags[3] = 1
+                if ('Breeze', y, x) not in self.symbols:
+                    self.symbols[('Breeze', y, x)] = Symbol(f'Breeze_{y}_{x}')
+                self.clauses.add(self.symbols[('Breeze', y, x)])
+            if isinstance(percept, Scream):
+                flags[4] = 1
+                if ('Scream', y, x) not in self.symbols:
+                    self.symbols[('Scream', y, x)] = Symbol(f'Scream_{y}_{x}')
+                self.clauses.add(self.symbols[('Scream', y, x)])
 
         # Things not perceived
         for i in range(len(flags)):
@@ -120,18 +122,20 @@ class KnowledgeBase:
                             self.symbols[('Wumpus', y - 1, x)] = Symbol(f'Wumpus_{y-1}_{x}')
                         consequents.add(self.symbols[('Wumpus', y-1, x)])
 
-                    if ('Wumpus', y + 1, x) not in self.symbols:
-                        self.symbols[('Wumpus', y + 1, x)] = Symbol(f'Wumpus_{y+1}_{x}')
-                    consequents.add(self.symbols[('Wumpus', y + 1, x)])
+                    if y < self.height:
+                        if ('Wumpus', y + 1, x) not in self.symbols:
+                            self.symbols[('Wumpus', y + 1, x)] = Symbol(f'Wumpus_{y+1}_{x}')
+                        consequents.add(self.symbols[('Wumpus', y + 1, x)])
 
                     if x > 1:
                         if ('Wumpus', y, x - 1) not in self.symbols:
                             self.symbols[('Wumpus', y, x - 1)] = Symbol(f'Wumpus_{y}_{x-1}')
                         consequents.add(self.symbols[('Wumpus', y, x-1)])
 
-                    if ('Wumpus', y, x + 1) not in self.symbols:
-                        self.symbols[('Wumpus', y, x + 1)] = Symbol(f'Wumpus_{y}_{x+1}')
-                    consequents.add(self.symbols[('Wumpus', y, x+1)])
+                    if x < self.width:
+                        if ('Wumpus', y, x + 1) not in self.symbols:
+                            self.symbols[('Wumpus', y, x + 1)] = Symbol(f'Wumpus_{y}_{x+1}')
+                        consequents.add(self.symbols[('Wumpus', y, x+1)])
 
                     if consequents.disjuncts:
                         self.clauses.add(Implication(self.symbols[('Stench', y, x)], consequents))
@@ -142,26 +146,84 @@ class KnowledgeBase:
                             self.symbols[('Pit', y-1, x)] = Symbol(f'Pit_{y-1}_{x}')
                         consequents.add(self.symbols[('Pit', y-1, x)])
 
-                    if ('Pit', y + 1, x) not in self.symbols:
-                        self.symbols[('Pit', y+1, x)] = Symbol(f'Pit_{y+1}_{x}')
-                    consequents.add(self.symbols[('Pit', y+1, x)])
+                    if y < self.height:
+                        if ('Pit', y + 1, x) not in self.symbols:
+                            self.symbols[('Pit', y+1, x)] = Symbol(f'Pit_{y+1}_{x}')
+                        consequents.add(self.symbols[('Pit', y+1, x)])
 
                     if x > 1:
                         if ('Pit', y, x - 1) not in self.symbols:
                             self.symbols[('Pit', y, x-1)] = Symbol(f'Pit_{y}_{x-1}')
                         consequents.add(self.symbols[('Pit', y, x-1)])
 
-                    if ('Pit', y, x + 1) not in self.symbols:
-                        self.symbols[('Pit', y, x+1)] = Symbol(f'Pit_{y}_{x+1}')
-                    consequents.add(self.symbols[('Pit', y, x+1)])
+                    if x < self.width:
+                        if ('Pit', y, x + 1) not in self.symbols:
+                            self.symbols[('Pit', y, x+1)] = Symbol(f'Pit_{y}_{x+1}')
+                        consequents.add(self.symbols[('Pit', y, x+1)])
 
                     if consequents.disjuncts:
                         self.clauses.add(Implication(self.symbols[('Breeze', y, x)], consequents))
                 elif i == 4:
                     pass
 
+
     # def add_temporal_sentence(self):
-    #     for x in 
+    #     for x in range(1, self.width + 1):
+    #         for y in range(1, self.height + 1):
+    #             # Stench, Breeze -> Wumpus, Pit
+    #             if ('Stench', y, x) not in self.symbols:
+    #                 self.symbols[('Stench', y, x)] = Symbol(f'Stench_{y}_{x}')
+
+    #             if ('Breeze', y, x) not in self.symbols:
+    #                 self.symbols[('Breeze', y, x)] = Symbol(f'Breeze_{y}_{x}')
+
+    #             wumpus_consequents = Or()
+    #             pit_consequents = Or()
+    #             if y > 1:
+    #                 if ('Wumpus', y - 1, x) not in self.symbols:
+    #                     self.symbols[('Wumpus', y - 1, x)] = Symbol(f'Wumpus_{y-1}_{x}')
+    #                 wumpus_consequents.add(self.symbols[('Wumpus', y-1, x)])
+
+    #                 if ('Pit', y - 1, x) not in self.symbols:
+    #                     self.symbols[('Pit', y-1, x)] = Symbol(f'Pit_{y-1}_{x}')
+    #                 pit_consequents.add(self.symbols[('Pit', y-1, x)])
+    #             if y < self.height:
+    #                 if ('Wumpus', y + 1, x) not in self.symbols:
+    #                     self.symbols[('Wumpus', y + 1, x)] = Symbol(f'Wumpus_{y+1}_{x}')
+    #                 wumpus_consequents.add(self.symbols[('Wumpus', y + 1, x)])
+
+    #                 if ('Pit', y + 1, x) not in self.symbols:
+    #                     self.symbols[('Pit', y+1, x)] = Symbol(f'Pit_{y+1}_{x}')
+    #                 pit_consequents.add(self.symbols[('Pit', y+1, x)])
+
+
+    #             if x > 1:
+    #                 if ('Wumpus', y, x - 1) not in self.symbols:
+    #                     self.symbols[('Wumpus', y, x - 1)] = Symbol(f'Wumpus_{y}_{x-1}')
+    #                 wumpus_consequents.add(self.symbols[('Wumpus', y, x-1)])
+
+    #                 if ('Pit', y, x - 1) not in self.symbols:
+    #                     self.symbols[('Pit', y, x-1)] = Symbol(f'Pit_{y}_{x-1}')
+    #                 pit_consequents.add(self.symbols[('Pit', y, x-1)])
+
+    #             if x < self.width:
+    #                 if ('Wumpus', y, x + 1) not in self.symbols:
+    #                     self.symbols[('Wumpus', y, x + 1)] = Symbol(f'Wumpus_{y}_{x+1}')
+    #                 wumpus_consequents.add(self.symbols[('Wumpus', y, x+1)])
+
+    #                 if ('Pit', y, x + 1) not in self.symbols:
+    #                     self.symbols[('Pit', y, x+1)] = Symbol(f'Pit_{y}_{x+1}')
+    #                 pit_consequents.add(self.symbols[('Pit', y, x+1)])
+
+    #             if wumpus_consequents.disjuncts:
+    #                 self.clauses.add(Implication(self.symbols[('Stench', y, x)], wumpus_consequents))
+                
+    #             if pit_consequents.disjuncts:
+    #                 self.clauses.add(Implication(self.symbols[('Breeze', y, x)], pit_consequents))
+                    
+                
+                
+
 
 
     # Inference with the query
@@ -172,6 +234,5 @@ class KnowledgeBase:
 def build_init_kb(N, environment):
     kb = KnowledgeBase(N=N)
     percepts = environment.percept((1, 1))
-    for percept in percepts:
-        kb.update_percept_sentence((1, 1), percept)
+    kb.update_percept_sentence((1, 1), percepts)
     return kb

@@ -80,3 +80,5 @@ class Direction:
             return iclass((y + 1, x))
         elif self.direction == self.D:
             return iclass((y - 1, x))
+
+

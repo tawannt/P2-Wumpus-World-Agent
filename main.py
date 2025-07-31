@@ -14,10 +14,11 @@ def main():
     kb = build_init_kb(N, world)
     explorer = Explorer(kb=kb)
     world.board[1][1].append(explorer)
+    world.agents.append(explorer)
     print("Initial Wumpus World:")
     world.print_board()
-    print(explorer.current_pos)
     print()
+    
     
 
     for thing in world.board[1][1]:
@@ -26,7 +27,9 @@ def main():
             if ('Pit', 2, 1) in thing.kb.symbols:
                 print(thing.kb.ask(Not(thing.kb.symbols[('Pit', 2, 1)])))
             else:
-                print(f'{('Breeze', 1, 1)} not in KB, that maybe means that Agent didn\'t percept Breeze or ERROR ')
+                print(f'{('Pit', 2, 1)} not in KB, that maybe means that Agent didn\'t percept Breeze or ERROR ')
+    
+
     
     
 

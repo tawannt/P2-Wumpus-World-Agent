@@ -1,6 +1,8 @@
 # marker Interface class
 class Thing():
-    pass
+    position = tuple()
+
+
 class Gold(Thing):
 
     def __eq__(self, rhs):
