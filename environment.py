@@ -93,7 +93,7 @@ class WumpusEnvironment:
                 #     continue
                 cell = self.board[y][x]
                 if not cell:
-                    print("[...........]", end=" ")
+                    print("[..........]", end=" ")
                 else:
                     symbols = []
                     
@@ -106,7 +106,7 @@ class WumpusEnvironment:
                         elif isinstance(t, Pit):
                             symbols.append("Pi")
                         elif isinstance(t, Gold):
-                            symbols.append("Go")
+                            symbols.append("G")
                         elif isinstance(t, Stench):
                             symbols.append("St")
                         elif isinstance(t, Breeze):
@@ -114,8 +114,8 @@ class WumpusEnvironment:
                         elif isinstance(t, Glitter):
                             symbols.append("Gl")
                         elif isinstance(t, Wall):
-                            symbols.append("###########")
-                    print(f"[{' '.join(symbols):<11}]", end=" ")
+                            symbols.append("##########")
+                    print(f"[{','.join(symbols):<10}]", end=" ")
             print()
 
     def is_in_map(self, pos):

@@ -10,7 +10,7 @@ from direction import Direction
 
 def main():
     random.seed(time.time())
-    N = 4
+    N = 6
     world= WumpusEnvironment(N=N, K_wumpuses=2, pit_probability=0.2)
     kb = build_init_kb(N, world)
     explorer = Explorer(kb=kb)
