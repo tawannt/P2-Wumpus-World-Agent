@@ -22,26 +22,26 @@ def main():
 
 
     
-    percepts = world.exe_action(explorer, (1, 1), 'TurnLeft')
-    print('After Turning Left: ')
-    world.print_board()
-    explorer.kb.update_action_sentence(explorer, turn_left(0), 0)
-    print(explorer.kb.clauses.formula())
-    percepts = world.exe_action(explorer, (1, 1), 'Shoot')
-    explorer.kb.update_action_sentence(explorer, shoot(explorer.location, explorer.direction.direction, 1), 1)
-    explorer.kb.update_percept_sentence(explorer.location, percepts)
+    # percepts = world.exe_action(explorer, (1, 1), 'TurnLeft')
+    # print('After Turning Left: ')
+    # world.print_board()
+    # explorer.kb.update_action_sentence(explorer, turn_left(0), 0)
+    # print(explorer.kb.clauses.formula())
+    # percepts = world.exe_action(explorer, (1, 1), 'Shoot')
+    # explorer.kb.update_action_sentence(explorer, shoot(explorer.location, explorer.direction.direction, 1), 1)
+    # explorer.kb.update_percept_sentence(explorer.location, percepts)
 
-    print('After Shooting: ')
-    world.print_board()
-    print(explorer.kb.clauses.formula())
+    # print('After Shooting: ')
+    # world.print_board()
+    # print(explorer.kb.clauses.formula())
     
-    # for thing in world.board[1][1]:
-    #     if isinstance(thing, Explorer):
-    #         print(thing.kb.clauses.formula())
-    #         if ('Pit', 2, 1) in thing.kb.symbols:
-    #             print(thing.kb.ask(Not(thing.kb.symbols[('Pit', 2, 1)])))
-    #         else:
-    #             print(f'{('Pit', 2, 1)} not in KB, that maybe means that Agent didn\'t percept Breeze or ERROR ')
+    for thing in world.board[1][1]:
+        if isinstance(thing, Explorer):
+            print(thing.kb.clauses.formula())
+            if ('Pit', 2, 1) in thing.kb.symbols:
+                print(thing.kb.ask(thing.kb.symbols[('Pit', 2, 1)]))
+            else:
+                print(f'{('Pit', 2, 1)} not in KB, that maybe means that Agent didn\'t percept Breeze or ERROR ')
     
     
     

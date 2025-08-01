@@ -234,22 +234,36 @@ class Biconditional(Sentence):
         return set.union(self.left.symbols(), self.right.symbols())
 
 
-# def forward_chaining(kb, query):
-#     # get facts (not including 'negative fact')
-#     facts = [clause for clause in kb.clauses.conjuncts if isinstance(clause, Symbol)]
-#     inferred = defaultdict(bool)
-#     # dict -> the number symbol in premise
-#     count = dict()
-#     for c in kb.clauses:
-#         if isinstance(c, Implication):
-#             if isinstance(c.antecedent, And):
-#                 count[c] = len(c.antecedent.conjuncts)
-#             else:
-#                 count[c] = 1
 
-def model_check(knowledge, query):
+def forward_chaining(kb, query):
+    # get facts (not including 'negative fact')
+    facts = [clause for clause in kb.clauses.conjuncts if isinstance(clause, Symbol)]
+    inferred = defaultdict(bool)
+    # dict -> the number symbol in premise
+    count = dict()
+    for c in kb.clauses.conjuncts:
+        if isinstance(c, Implication):
+            if isinstance(c.antecedent, And):
+                count[c] = len(c.antecedent.conjuncts)
+            else:
+                count[c] = 1
+    # rules = kb_with_premise(kb.clauses)
+    while facts:
+        fact = facts.pop()
+        if fact == query:
+            return True
+        if not inferred[fact]:
+            inferred[fact] = True
+            for rule in kb.list_clauses_with_premise(fact):
+                count[rule] -= 1
+                if count[rule] == 0:
+                    facts.append(rule.consequent)
+    return False
+
+
+def model_check(kb, query):
     """Checks if knowledge base entails query."""
-
+    knowledge = kb.clauses
     def check_all(knowledge, query, symbols, model):
         """Checks if knowledge base entails query, given a particular model."""
 
