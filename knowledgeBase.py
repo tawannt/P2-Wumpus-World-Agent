@@ -67,9 +67,8 @@ class KnowledgeBase:
             # self.clauses.add(Not(self.symbols[('Pit', y, x)]))
             # self.clauses.add(Not(self.symbols[('Wumpus', y, x)]))
             self.visited.append(pos)
-        else:
-            return
         flags = [0, 0, 0, 0, 0]
+
         for percept in percepts:
             # Things perceived
             # Glitter, Bump, Stench, Breeze, Scream
@@ -88,11 +87,13 @@ class KnowledgeBase:
                 if ('Stench', y, x) not in self.symbols:
                     self.symbols[('Stench', y, x)] = Symbol(f'Stench_{y}_{x}')
                 self.clauses.add(self.symbols[('Stench', y, x)])
+
             if isinstance(percept, Breeze):
                 flags[3] = 1
                 if ('Breeze', y, x) not in self.symbols:
                     self.symbols[('Breeze', y, x)] = Symbol(f'Breeze_{y}_{x}')
                 self.clauses.add(self.symbols[('Breeze', y, x)])
+
             if isinstance(percept, Scream):
                 flags[4] = 1
                 if ('Scream', y, x) not in self.symbols:
@@ -114,6 +115,7 @@ class KnowledgeBase:
                     if ('Stench', y, x) not in self.symbols:
                         self.symbols[('Stench', y, x)] = Symbol(f'Stench_{y}_{x}')
                     self.clauses.add(Not(self.symbols[('Stench', y, x)]))
+                    print('hello3')
                 elif i == 3:
                     if ('Breeze', y, x) not in self.symbols:
                         self.symbols[('Breeze', y, x)] = Symbol(f'Breeze_{y}_{x}')
