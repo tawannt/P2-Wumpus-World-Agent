@@ -1,4 +1,4 @@
-from logic import Sentence, Symbol, Not, And, Or, Implication, model_check, forward_chaining, move_forward, shoot, grab, turn_left, turn_right, ok_to_move
+from logic import Sentence, Symbol, Not, And, Or, Implication, model_check, forward_chaining, move_forward, shoot, grab, turn_left, turn_right, ok_to_move, to_cnf, pl_resolution
 from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream, MoveFoward, TurnLeft, TurnRight, Grab, Shoot
 
 
@@ -54,7 +54,7 @@ class KnowledgeBase:
     def update_percept_sentence(self, pos, percepts):
         y, x = pos[:2]
         # Mark current position as safe
-        self.symbols[('SafePosition', y, x)] = Symbol(f'SafePosition_{y}_{x}')
+        # self.symbols[('SafePosition', y, x)] = Symbol(f'SafePosition_{y}_{x}')
         # self.clauses.add(self.symbols[('SafePosition', y, x)])
         if ('Pit', y, x) not in self.symbols:
             self.symbols[('Pit', y, x)] = Symbol(f'Pit_{y}_{x}')
@@ -64,8 +64,11 @@ class KnowledgeBase:
         # just update Not Pit or Wumpus when the pos is not in visited positions' list
         # in advanced setting (Wumpus Move) => should fix this
         if pos not in self.visited:
-            self.clauses.add(Not(self.symbols[('Pit', y, x)]))
-            self.clauses.add(Not(self.symbols[('Wumpus', y, x)]))
+            # self.clauses.add(Not(self.symbols[('Pit', y, x)]))
+            # self.clauses.add(Not(self.symbols[('Wumpus', y, x)]))
+            self.visited.append(pos)
+        else:
+            return
         flags = [0, 0, 0, 0, 0]
         for percept in percepts:
             # Things perceived
@@ -190,37 +193,48 @@ class KnowledgeBase:
                     if ('Wumpus', y - 1, x) not in self.symbols:
                         self.symbols[('Wumpus', y - 1, x)] = Symbol(f'Wumpus_{y-1}_{x}')
                     wumpus_consequents.add(self.symbols[('Wumpus', y-1, x)])
+                    # self.clauses.add(Implication(self.symbols[('Stench', y, x)], self.symbols[('Wumpus', y-1, x)]))
 
                     if ('Pit', y - 1, x) not in self.symbols:
                         self.symbols[('Pit', y-1, x)] = Symbol(f'Pit_{y-1}_{x}')
                     pit_consequents.add(self.symbols[('Pit', y-1, x)])
+                    # self.clauses.add(Implication(self.symbols[('Breeze', y, x)], self.symbols[('Pit', y-1, x)]))
+
+
                 if y < self.height:
                     if ('Wumpus', y + 1, x) not in self.symbols:
                         self.symbols[('Wumpus', y + 1, x)] = Symbol(f'Wumpus_{y+1}_{x}')
-                    wumpus_consequents.add(self.symbols[('Wumpus', y + 1, x)])
+                    wumpus_consequents.add(self.symbols[('Wumpus', y+1, x)])
+                    # self.clauses.add(Implication(self.symbols[('Stench', y, x)], self.symbols[('Wumpus', y+1, x)]))
 
                     if ('Pit', y + 1, x) not in self.symbols:
                         self.symbols[('Pit', y+1, x)] = Symbol(f'Pit_{y+1}_{x}')
                     pit_consequents.add(self.symbols[('Pit', y+1, x)])
+                    # self.clauses.add(Implication(self.symbols[('Breeze', y, x)], self.symbols[('Pit', y+1, x)]))
 
 
                 if x > 1:
                     if ('Wumpus', y, x - 1) not in self.symbols:
                         self.symbols[('Wumpus', y, x - 1)] = Symbol(f'Wumpus_{y}_{x-1}')
                     wumpus_consequents.add(self.symbols[('Wumpus', y, x-1)])
+                    # self.clauses.add(Implication(self.symbols[('Stench', y, x)], self.symbols[('Wumpus', y, x-1)]))
+                    
 
                     if ('Pit', y, x - 1) not in self.symbols:
                         self.symbols[('Pit', y, x-1)] = Symbol(f'Pit_{y}_{x-1}')
                     pit_consequents.add(self.symbols[('Pit', y, x-1)])
+                    # self.clauses.add(Implication(self.symbols[('Breeze', y, x)], self.symbols[('Pit', y, x-1)]))
 
                 if x < self.width:
                     if ('Wumpus', y, x + 1) not in self.symbols:
                         self.symbols[('Wumpus', y, x + 1)] = Symbol(f'Wumpus_{y}_{x+1}')
                     wumpus_consequents.add(self.symbols[('Wumpus', y, x+1)])
+                    # self.clauses.add(Implication(self.symbols[('Stench', y, x)], self.symbols[('Wumpus', y, x+1)]))
 
                     if ('Pit', y, x + 1) not in self.symbols:
                         self.symbols[('Pit', y, x+1)] = Symbol(f'Pit_{y}_{x+1}')
                     pit_consequents.add(self.symbols[('Pit', y, x+1)])
+                    # self.clauses.add(Implication(self.symbols[('Breeze', y, x)], self.symbols[('Pit', y, x+1)]))
 
                 if wumpus_consequents.disjuncts:
                     self.clauses.add(Implication(self.symbols[('Stench', y, x)], wumpus_consequents))
@@ -231,9 +245,16 @@ class KnowledgeBase:
                 
     def list_clauses_with_premise(self, p):
         # rules (not including facts) that having p in the premise
+        # print(f'p: {p}')
         list_rules = []
         for k in self.clauses.conjuncts:
-            if isinstance(k, Implication) and p in k.antecedent.symbols():
+            # print(f'k: {k}')
+            # # print({k.symbols}
+            # if isinstance(k, Implication):
+            #     print(f'k.antecedent.symbols(): {k.antecedent.symbols()}')
+            #     if p.name in k.antecedent.symbols():
+            #         print('p in')
+            if isinstance(k, Implication) and p.name in k.antecedent.symbols():
                 list_rules.append(k)
         return list_rules
 
@@ -242,7 +263,8 @@ class KnowledgeBase:
     # Inference with the query
     def ask(self, query: Sentence) -> bool:
         # return model_check(self, query)
-        return forward_chaining(self, query)
+        # return forward_chaining(self, query)
+        return pl_resolution(self, query)
 
 
 def build_init_kb(N, environment):
