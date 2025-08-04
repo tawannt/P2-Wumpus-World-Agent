@@ -1,4 +1,4 @@
-from logic import Sentence, Symbol, Not, And, Or, Implication, model_check, forward_chaining, move_forward, shoot, grab, turn_left, turn_right, ok_to_move, to_cnf, pl_resolution
+from logic import Sentence, Symbol, Not, And, Or, Implication, Biconditional, model_check, forward_chaining, move_forward, shoot, grab, turn_left, turn_right, ok_to_move, to_cnf, pl_resolution
 from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream, MoveFoward, TurnLeft, TurnRight, Grab, Shoot
 
 
@@ -9,7 +9,7 @@ class KnowledgeBase:
         - clauses: Logic connective And(sentence1, sentence2,..., sentenceK)
     '''
 
-    def __init__(self, knowledge=None, symbols=None, visited=set([(1,1)]), N=8):
+    def __init__(self, knowledge=None, symbols=None, visited=None, N=8):
         self.width = N
         self.height = N
         if symbols is None:
@@ -63,10 +63,10 @@ class KnowledgeBase:
 
         # just update Not Pit or Wumpus when the pos is not in visited positions' list
         # in advanced setting (Wumpus Move) => should fix this
-        if pos not in self.visited:
-            # self.clauses.add(Not(self.symbols[('Pit', y, x)]))
-            # self.clauses.add(Not(self.symbols[('Wumpus', y, x)]))
-            self.visited.append(pos)
+        # if pos not in self.visited:
+        #     # self.clauses.add(Not(self.symbols[('Pit', y, x)]))
+        #     # self.clauses.add(Not(self.symbols[('Wumpus', y, x)]))
+        #     self.visited.append(pos)
         flags = [0, 0, 0, 0, 0]
 
         for percept in percepts:
@@ -239,10 +239,10 @@ class KnowledgeBase:
                     # self.clauses.add(Implication(self.symbols[('Breeze', y, x)], self.symbols[('Pit', y, x+1)]))
 
                 if wumpus_consequents.disjuncts:
-                    self.clauses.add(Implication(self.symbols[('Stench', y, x)], wumpus_consequents))
+                    self.clauses.add(Biconditional(self.symbols[('Stench', y, x)], wumpus_consequents))
                 
                 if pit_consequents.disjuncts:
-                    self.clauses.add(Implication(self.symbols[('Breeze', y, x)], pit_consequents))
+                    self.clauses.add(Biconditional(self.symbols[('Breeze', y, x)], pit_consequents))
                     
                 
     def list_clauses_with_premise(self, p):
