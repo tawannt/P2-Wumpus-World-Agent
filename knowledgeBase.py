@@ -9,7 +9,7 @@ class KnowledgeBase:
         - clauses: Logic connective And(sentence1, sentence2,..., sentenceK)
     '''
 
-    def __init__(self, knowledge=None, symbols=None, visited=None, N=8):
+    def __init__(self, knowledge=None, symbols=None, visited=[], N=8):
         self.width = N
         self.height = N
         if symbols is None:
@@ -27,6 +27,18 @@ class KnowledgeBase:
         self.clauses.add(Not(self.symbols[('Wumpus', 1, 1)]))
         self.clauses.add(Not(self.symbols[('Pit', 1, 1)]))
         self.visited = visited
+
+        for x in range(1, self.width + 1):
+            for y in range(1, self.height + 1):
+                # Stench, Breeze -> Wumpus, Pit
+                if ('Stench', y, x) not in self.symbols:
+                    self.symbols[('Stench', y, x)] = Symbol(f'Stench_{y}_{x}')
+                if ('Breeze', y, x) not in self.symbols:
+                    self.symbols[('Breeze', y, x)] = Symbol(f'Breeze_{y}_{x}')
+                if ('Pit', y, x) not in self.symbols:
+                    self.symbols[('Pit', y, x)] = Symbol(f'Pit_{y}_{x}')
+                if ('Wumpus', y, x) not in self.symbols:
+                    self.symbols[('Wumpus', y, x)] = Symbol(f'Wumpus_{y}_{x}')
 
         # self.add_temporal_sentence()
 
@@ -63,10 +75,10 @@ class KnowledgeBase:
 
         # just update Not Pit or Wumpus when the pos is not in visited positions' list
         # in advanced setting (Wumpus Move) => should fix this
-        # if pos not in self.visited:
-        #     # self.clauses.add(Not(self.symbols[('Pit', y, x)]))
-        #     # self.clauses.add(Not(self.symbols[('Wumpus', y, x)]))
-        #     self.visited.append(pos)
+        if pos not in self.visited:
+            self.clauses.add(Not(self.symbols[('Pit', y, x)]))
+            self.clauses.add(Not(self.symbols[('Wumpus', y, x)]))
+            self.visited.append(pos)
         flags = [0, 0, 0, 0, 0]
 
         for percept in percepts:
