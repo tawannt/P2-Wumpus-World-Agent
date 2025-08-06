@@ -28,7 +28,7 @@ class KnowledgeBase:
         self.clauses.add(Not(self.symbols[('Pit', 1, 1)]))
         self.visited = visited
 
-        self.add_temporal_sentence()
+        # self.add_temporal_sentence()
 
     def __iadd__(self, sentence):
         if Sentence.validate(sentence) and sentence not in self.clauses:
@@ -115,7 +115,6 @@ class KnowledgeBase:
                     if ('Stench', y, x) not in self.symbols:
                         self.symbols[('Stench', y, x)] = Symbol(f'Stench_{y}_{x}')
                     self.clauses.add(Not(self.symbols[('Stench', y, x)]))
-                    print('hello3')
                 elif i == 3:
                     if ('Breeze', y, x) not in self.symbols:
                         self.symbols[('Breeze', y, x)] = Symbol(f'Breeze_{y}_{x}')
@@ -124,59 +123,59 @@ class KnowledgeBase:
                     if ('Scream', y, x) not in self.symbols:
                         self.symbols[('Scream', y, x)] = Symbol(f'Scream_{y}_{x}')
                     self.clauses.add(Not(self.symbols[('Scream', y, x)]))
-            # else:
-            #     if i == 1:
-            #         pass
-            #     elif i == 2:  # Stench
-            #         consequents = Or()
-            #         if y > 1:
-            #             if ('Wumpus', y - 1, x) not in self.symbols:
-            #                 self.symbols[('Wumpus', y - 1, x)] = Symbol(f'Wumpus_{y-1}_{x}')
-            #             consequents.add(self.symbols[('Wumpus', y-1, x)])
+            else:
+                if i == 1:
+                    pass
+                elif i == 2:  # Stench
+                    consequents = Or()
+                    if y > 1:
+                        if ('Wumpus', y - 1, x) not in self.symbols:
+                            self.symbols[('Wumpus', y - 1, x)] = Symbol(f'Wumpus_{y-1}_{x}')
+                        consequents.add(self.symbols[('Wumpus', y-1, x)])
 
-            #         if y < self.height:
-            #             if ('Wumpus', y + 1, x) not in self.symbols:
-            #                 self.symbols[('Wumpus', y + 1, x)] = Symbol(f'Wumpus_{y+1}_{x}')
-            #             consequents.add(self.symbols[('Wumpus', y + 1, x)])
+                    if y < self.height:
+                        if ('Wumpus', y + 1, x) not in self.symbols:
+                            self.symbols[('Wumpus', y + 1, x)] = Symbol(f'Wumpus_{y+1}_{x}')
+                        consequents.add(self.symbols[('Wumpus', y + 1, x)])
 
-            #         if x > 1:
-            #             if ('Wumpus', y, x - 1) not in self.symbols:
-            #                 self.symbols[('Wumpus', y, x - 1)] = Symbol(f'Wumpus_{y}_{x-1}')
-            #             consequents.add(self.symbols[('Wumpus', y, x-1)])
+                    if x > 1:
+                        if ('Wumpus', y, x - 1) not in self.symbols:
+                            self.symbols[('Wumpus', y, x - 1)] = Symbol(f'Wumpus_{y}_{x-1}')
+                        consequents.add(self.symbols[('Wumpus', y, x-1)])
 
-            #         if x < self.width:
-            #             if ('Wumpus', y, x + 1) not in self.symbols:
-            #                 self.symbols[('Wumpus', y, x + 1)] = Symbol(f'Wumpus_{y}_{x+1}')
-            #             consequents.add(self.symbols[('Wumpus', y, x+1)])
+                    if x < self.width:
+                        if ('Wumpus', y, x + 1) not in self.symbols:
+                            self.symbols[('Wumpus', y, x + 1)] = Symbol(f'Wumpus_{y}_{x+1}')
+                        consequents.add(self.symbols[('Wumpus', y, x+1)])
 
-            #         if consequents.disjuncts:
-            #             self.clauses.add(Implication(self.symbols[('Stench', y, x)], consequents))
-            #     elif i == 3:  # Breeze
-            #         consequents = Or()
-            #         if y > 1:
-            #             if ('Pit', y - 1, x) not in self.symbols:
-            #                 self.symbols[('Pit', y-1, x)] = Symbol(f'Pit_{y-1}_{x}')
-            #             consequents.add(self.symbols[('Pit', y-1, x)])
+                    if consequents.disjuncts:
+                        self.clauses.add(Implication(self.symbols[('Stench', y, x)], consequents))
+                elif i == 3:  # Breeze
+                    consequents = Or()
+                    if y > 1:
+                        if ('Pit', y - 1, x) not in self.symbols:
+                            self.symbols[('Pit', y-1, x)] = Symbol(f'Pit_{y-1}_{x}')
+                        consequents.add(self.symbols[('Pit', y-1, x)])
 
-            #         if y < self.height:
-            #             if ('Pit', y + 1, x) not in self.symbols:
-            #                 self.symbols[('Pit', y+1, x)] = Symbol(f'Pit_{y+1}_{x}')
-            #             consequents.add(self.symbols[('Pit', y+1, x)])
+                    if y < self.height:
+                        if ('Pit', y + 1, x) not in self.symbols:
+                            self.symbols[('Pit', y+1, x)] = Symbol(f'Pit_{y+1}_{x}')
+                        consequents.add(self.symbols[('Pit', y+1, x)])
 
-            #         if x > 1:
-            #             if ('Pit', y, x - 1) not in self.symbols:
-            #                 self.symbols[('Pit', y, x-1)] = Symbol(f'Pit_{y}_{x-1}')
-            #             consequents.add(self.symbols[('Pit', y, x-1)])
+                    if x > 1:
+                        if ('Pit', y, x - 1) not in self.symbols:
+                            self.symbols[('Pit', y, x-1)] = Symbol(f'Pit_{y}_{x-1}')
+                        consequents.add(self.symbols[('Pit', y, x-1)])
 
-            #         if x < self.width:
-            #             if ('Pit', y, x + 1) not in self.symbols:
-            #                 self.symbols[('Pit', y, x+1)] = Symbol(f'Pit_{y}_{x+1}')
-            #             consequents.add(self.symbols[('Pit', y, x+1)])
+                    if x < self.width:
+                        if ('Pit', y, x + 1) not in self.symbols:
+                            self.symbols[('Pit', y, x+1)] = Symbol(f'Pit_{y}_{x+1}')
+                        consequents.add(self.symbols[('Pit', y, x+1)])
 
-            #         if consequents.disjuncts:
-            #             self.clauses.add(Implication(self.symbols[('Breeze', y, x)], consequents))
-            #     elif i == 4:
-            #         pass
+                    if consequents.disjuncts:
+                        self.clauses.add(Implication(self.symbols[('Breeze', y, x)], consequents))
+                elif i == 4:
+                    pass
 
 
     def add_temporal_sentence(self):

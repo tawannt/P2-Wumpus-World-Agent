@@ -131,7 +131,7 @@ class And(Sentence):
     def formula(self):
         if len(self.conjuncts) == 1:
             return self.conjuncts[0].formula()
-        return " ∧ ".join([Sentence.parenthesize(conjunct.formula())
+        return " \n ".join([Sentence.parenthesize(conjunct.formula())
                            for conjunct in self.conjuncts])
 
     def symbols(self):
@@ -421,37 +421,38 @@ def to_cnf(sentence):
     return sent
 
 
-def pl_resolution(kb, query):
-    """Implement resolution refutation to check if kb |= alpha."""
-    # Convert kb and ¬alpha to CNF
-    # newkb = copy.deepcopy(kb)
-    # newkb.clauses.add(Not(alpha))
-    # print(newKB.clauses.formula())
-    clauses = kb.clauses.conjuncts.copy()
-    negate_query = Not(query)
-    clauses.append(negate_query)
-    # print(clauses)
-    new = set()
-
-    while True:
-    # for i in range(2):
-        n = len(clauses)
-        pairs = [(clauses[i], clauses[j])
-                 for i in range(n) for j in range(i + 1, n)]
-        # print(f'pairs:{pairs}')
-        # print()
-        for (ci, cj) in pairs:
-            resolvents = pl_resolve(ci, cj)
-            if False in resolvents:
-                return True
-            new = new.union(set(resolvents))
-            # print(f'new:{new}')
-        if new.issubset(set(clauses)):
-            return False
-        for c in new:
-            if c not in clauses:
-                clauses.append(c)
-        # print(clauses)
+# def pl_resolution(kb, query):
+#     """Implement resolution refutation to check if kb |= alpha."""
+#     # Convert kb and ¬alpha to CNF
+#     # newkb = copy.deepcopy(kb)
+#     # newkb.clauses.add(Not(alpha))
+#     # print(newKB.clauses.formula())
+#     clauses = kb.clauses.conjuncts.copy()
+#     negate_query = Not(query)
+#     clauses.append(negate_query)
+#     # print(clauses)
+#     new = set()
+#     index = 0
+#     while True:
+#     # for i in range(2):
+#         n = len(clauses)
+#         pairs = [(clauses[i], clauses[j])
+#                  for i in range(n) for j in range(i + 1, n)]
+#         # print(f'pairs:{pairs}')
+#         # print()
+#         for (ci, cj) in pairs:
+#             resolvents = pl_resolve(ci, cj, index)
+#             if False in resolvents:
+#                 return True
+#             new = new.union(set(resolvents))
+#         print(f'new:{new}')
+#         if new.issubset(set(clauses)):
+#             return False
+#         for c in new:
+#             if c not in clauses:
+#                 clauses.append(c)
+#         # print(clauses)
+#         index += 1
         
     
 
@@ -461,7 +462,6 @@ def pl_resolution(kb, query):
 #     print()
 #     """Resolve two clauses to produce resolvents."""
 #     resolvents = set()
-#     # Simple resolution (assuming binary resolution for now)
 #     if isinstance(Ci, Or) and isinstance(Cj, Or):
 #         for li in Ci.disjuncts:
 #             for lj in Cj.disjuncts:
@@ -470,55 +470,159 @@ def pl_resolution(kb, query):
 #                 elif isinstance(lj, Not) and isinstance(li, Symbol) and lj.operand == li:
 #                     resolvents.add(Ci)
 #     return list(resolvents)
+# def pl_resolve(ci, cj, index):
+#     """Return all resolvent clauses from resolving ci and cj."""
+#     resolvents = []
+
+#     # Get disjuncts from both ci and cj
+#     # if isinstance(ci, Or):
+#         # print(f'OR: {ci.disjuncts}')
+#     disjuncts_ci = ci.disjuncts if isinstance(ci, Or) else [ci]
+#     disjuncts_cj = cj.disjuncts if isinstance(cj, Or) else [cj]
+
+#     # print('-')
+#     # print(f'disjucts_ci:{disjuncts_ci}')
+#     # print(f'disjucts_cj:{disjuncts_cj}')
+#     # print('-')
+
+#     for di in disjuncts_ci:
+#         for dj in disjuncts_cj:
+#             # Check if di and dj are complementary
+#             # print(f'1: {di} and {dj}')
+#             # print('___')
+#             # print('___')
+#             if (isinstance(di, Not) and di.operand == dj) or (isinstance(dj, Not) and dj.operand == di):
+#                 # print(f'2: {di} and {dj}')
+#                 # print()
+#                 # Remove di and dj
+#                 # print(f'disjuncts_cj:{disjuncts_cj}')
+#                 # print(f'disjuncts_ci:{disjuncts_ci}')
+                
+#                 rest_di = [d for d in disjuncts_ci if d != di]
+#                 rest_dj = [d for d in disjuncts_cj if d != dj]
+#                 # print(f'disjuncts_cj_after:{rest_dj}')
+#                 # print(f'disjuncts_ci_after:{rest_di}')
+#                 combined = rest_di + rest_dj
+#                 # print(combined)
+
+#                 # Remove duplicates
+#                 unique_literals = []
+#                 for lit in combined:
+#                     if lit not in unique_literals:
+#                         unique_literals.append(lit)
+#                 # print(f'unique:{unique_literals}')
+#                 # If nothing left => empty clause (contradiction)
+#                 if len(unique_literals) == 0:
+#                     # print(f'3: {di} and {dj}')
+#                     return [False]  # Representing contradiction
+
+#                 # Otherwise, return new clause (Or if multiple, else single literal)
+#                 if len(unique_literals) == 1:
+#                     resolvents.append(unique_literals[0])
+#                 else:
+#                     resolvents.append(Or(*unique_literals))
+#                 # print(f'resolvents: {resolvents}')
+#     # print(f'FINAL resolvents: {resolvents}')
+
+#     return flatten_or(resolvents)
+
+from collections import defaultdict
+import itertools
+import copy
+
+from collections import defaultdict
+import itertools
+import copy
+
+# [Previous Sentence, Symbol, Not, And, Or, Implication, Biconditional classes unchanged]
+# [Previous to_cnf, flatten_or, and other functions unchanged]
+
+def pl_resolution(kb, query):
+    """Implement resolution refutation to check if kb |= alpha."""
+    # Convert KB clauses to CNF and flatten And clauses
+    clauses = []
+    for clause in kb.clauses.conjuncts:
+        clause = to_cnf(clause)
+        if isinstance(clause, And):
+            clauses.extend(clause.conjuncts)
+        else:
+            clauses.append(clause)
+    negate_query = to_cnf(Not(query))
+    if isinstance(negate_query, And):
+        clauses.extend(negate_query.conjuncts)
+    else:
+        clauses.append(negate_query)
+    
+    print("Initial clauses:", [c.formula() for c in clauses])
+    
+    new = set()
+    iteration = 0
+    while True:
+        print(f"\nIteration {iteration}:")
+        n = len(clauses)
+        pairs = [(clauses[i], clauses[j]) for i in range(n) for j in range(i + 1, n)]
+        
+        for (ci, cj) in pairs:
+            resolvents = pl_resolve(ci, cj)
+            print(f"Resolving {ci.formula()} and {cj.formula()} -> {[r.formula() if r is not False else 'False' for r in resolvents]}")
+            if False in resolvents:
+                print("Contradiction found!")
+                return True
+            new.update([to_cnf(r) for r in resolvents if r is not None])
+        
+        print(f"New clauses: {[c.formula() for c in new]}")
+        normalized_new = {normalize_clause(c) for c in new}
+        normalized_clauses = {normalize_clause(c) for c in clauses}
+        
+        print(f"Normalized new: {[c.formula() if c is not False else 'False' for c in normalized_new]}")
+        print(f"Normalized clauses: {[c.formula() if c is not False else 'False' for c in normalized_clauses]}")
+        
+        if normalized_new.issubset(normalized_clauses):
+            print("No new clauses, terminating.")
+            return False
+        
+        clauses.extend([c for c in new if normalize_clause(c) not in normalized_clauses])
+        new.clear()
+        iteration += 1
+
 def pl_resolve(ci, cj):
     """Return all resolvent clauses from resolving ci and cj."""
     resolvents = []
-
-    # Get disjuncts from both ci and cj
-    # if isinstance(ci, Or):
-        # print(f'OR: {ci.disjuncts}')
+    
     disjuncts_ci = ci.disjuncts if isinstance(ci, Or) else [ci]
     disjuncts_cj = cj.disjuncts if isinstance(cj, Or) else [cj]
-
-    # print('-')
-    # print(f'disjucts_ci:{disjuncts_ci}')
-    # print(f'disjucts_cj:{disjuncts_cj}')
-    # print('-')
-
+    
     for di in disjuncts_ci:
         for dj in disjuncts_cj:
-            # Check if di and dj are complementary
-            # print(f'1: {di} and {dj}')
-            # print('___')
-            # print('___')
             if (isinstance(di, Not) and di.operand == dj) or (isinstance(dj, Not) and dj.operand == di):
-                # print(f'2: {di} and {dj}')
-                # Remove di and dj
-                # print(f'disjuncts_cj:{disjuncts_cj}')
-                # print(f'disjuncts_ci:{disjuncts_ci}')
-                
                 rest_di = [d for d in disjuncts_ci if d != di]
                 rest_dj = [d for d in disjuncts_cj if d != dj]
-                # print(f'disjuncts_cj_after:{rest_dj}')
-                # print(f'disjuncts_ci_after:{rest_di}')
                 combined = rest_di + rest_dj
-                # print(combined)
-
-                # Remove duplicates
+                
                 unique_literals = []
+                seen_formulas = set()
                 for lit in combined:
-                    if lit not in unique_literals:
+                    formula = lit.formula()
+                    if formula not in seen_formulas:
                         unique_literals.append(lit)
-                # print(f'unique:{unique_literals}')
-                # If nothing left => empty clause (contradiction)
-                if len(unique_literals) == 0:
-                    # print(f'3: {di} and {dj}')
-                    return [False]  # Representing contradiction
-
-                # Otherwise, return new clause (Or if multiple, else single literal)
-                if len(unique_literals) == 1:
-                    resolvents.append(unique_literals[0])
+                        seen_formulas.add(formula)
+                
+                if not unique_literals:
+                    resolvents.append(False)
                 else:
-                    resolvents.append(Or(*unique_literals))
+                    resolvent = unique_literals[0] if len(unique_literals) == 1 else Or(*unique_literals)
+                    resolvents.append(resolvent)
+    
+    return resolvents
 
-    return flatten_or(resolvents)
+def normalize_clause(clause):
+    """Normalize a clause for comparison (e.g., sort disjuncts)."""
+    if clause is False:
+        return False
+    if isinstance(clause, Or):
+        sorted_disjuncts = sorted(clause.disjuncts, key=lambda x: x.formula())
+        return Or(*sorted_disjuncts)
+    if isinstance(clause, Symbol) or isinstance(clause, Not):
+        return clause
+    raise ValueError(f"Unexpected clause type: {type(clause)}")
+
