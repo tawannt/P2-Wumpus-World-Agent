@@ -4,24 +4,26 @@ from agent import Explorer, Stench, Breeze
 from direction import Direction
 from environment import WumpusEnvironment
 from logic import Sentence, Symbol, Not, And, Or, Implication, Biconditional, model_check, forward_chaining, move_forward, shoot, grab, turn_left, turn_right, ok_to_move, to_cnf, pl_resolution
-from knowledgeBase import build_init_kb
+from knowledgeBase import build_init_kb, KnowledgeBase
+
 # def main():
 #     kb = KnowledgeBase(N=3)
 #     if ('Stench', 1, 1) not in kb.symbols:
 #         kb.symbols[('Stench', 1, 1)] = Symbol(f'Stench_{1}_{1}')
 #     kb.clauses.add(kb.symbols[('Stench', 1, 1)])
-#     kb.clauses.add(Biconditional(kb.symbols[('Stench', 1, 1)], Or(Symbol('Pit_1_2'), Symbol('Pit_2_1'))))
+#     kb.clauses.add(Biconditional(kb.symbols[('Stench', 1, 1)], Or(Symbol('Wumpus_1_2'), Symbol('Wumpus_2_1'))))
+#     kb.clauses.add(Biconditional(kb.symbols[('Breeze', 1, 1)], Or(Symbol('Pit_1_2'), Symbol('Pit_2_1'))))
     
 #     print(kb.clauses.formula())
 #     print()
-#     if ('Stench', 1, 3) not in kb.symbols:
-#         kb.symbols[('Stench', 1, 3)] = Symbol(f'Stench_{1}_{3}')
-#     kb.clauses.add(Biconditional(kb.symbols[('Stench', 1, 3)], Or(Symbol('Pit_1_2'), Symbol('Pit_2_3'))))
-#     kb.clauses.add(Not(kb.symbols[('Stench', 1, 3)]))
+#     if ('Breeze', 1, 3) not in kb.symbols:
+#         kb.symbols[('Breeze', 1, 3)] = Symbol(f'Breeze_{1}_{3}')
+#     kb.clauses.add(Biconditional(kb.symbols[('Breeze', 1, 3)], Or(Symbol('Pit_1_2'), Symbol('Pit_2_3'))))
+#     kb.clauses.add(Not(kb.symbols[('Breeze', 1, 3)]))
 #     print(kb.clauses.formula())
 #     print()
 
-#     print(kb.ask(Symbol('Pit_1_2')))
+#     # print(kb.ask(Symbol('Pit_1_2')))
 #     # print(kb.ask(Symbol('Pit_2_1')))
 
 # if __name__ == "__main__":
@@ -31,6 +33,52 @@ from knowledgeBase import build_init_kb
 import random
 import time
 import ast
+def parse_logic_expression(kb, expr_str):
+    """Parse a string into a logic expression"""
+    try:
+        # Clean the input
+        expr_str = expr_str.strip()
+        
+        # Handle simple symbol names
+        if expr_str.replace('_', '').replace(' ', '').isalnum():
+            # Simple symbol - check if it exists
+            symbol_name = expr_str.replace(' ', '_')
+            for key, symbol in kb.symbols.items():
+                if symbol.name == symbol_name:
+                    return symbol
+            # If not found, create new symbol
+            return Symbol(symbol_name)
+        
+        # For complex expressions, we need to parse them
+        # This is a simplified parser - in practice you might want a more robust one
+        
+        # Replace common patterns
+        expr_str = expr_str.replace('NOT', 'Not')
+        expr_str = expr_str.replace('AND', 'And')
+        expr_str = expr_str.replace('OR', 'Or')
+        expr_str = expr_str.replace('IMPLIES', 'Implication')
+        expr_str = expr_str.replace('=>', ', ')
+        
+        # Create namespace with logic classes and available symbols
+        namespace = {
+            'Symbol': Symbol,
+            'Not': Not,
+            'And': And,
+            'Or': Or,
+            'Implication': Implication,
+            'Biconditional': Biconditional
+        }
+        
+        # Add all symbols from KB to namespace
+        for key, symbol in kb.symbols.items():
+            namespace[symbol.name] = symbol
+        
+        # Try to evaluate the expression
+        result = eval(expr_str, {"__builtins__": {}}, namespace)
+        return result
+            
+    except Exception as e:
+        raise ValueError(f"Failed to parse expression: {e}")
 
 def main():
     random.seed(time.time())
@@ -65,27 +113,17 @@ def main():
             num_query = int(input("Num queries: "))
             for i in range(num_query):
                 query_input = input("Enter a query tuple (e.g., ('Pit', 2, 1)): ")
-                parsed = ast.literal_eval(query_input)
-                if not (isinstance(parsed, tuple) and len(parsed) == 3):
-                    print("Invalid format. Must be a tuple like ('Pit', 2, 1).")
-                    continue
-                name, y, x = parsed
-
-                if parsed not in explorer.kb.symbols:
-                    print(f"Symbol {parsed} not in KB symbols.")
-                    continue
-
-                symbol = explorer.kb.symbols[parsed]
-                print("Checking with forward chaining...")
+                
+                symbol = parse_logic_expression(kb, query_input)
+                print("Checking with resolution...")
                 # result = forward_chaining(explorer.kb, symbol)
                 result = explorer.kb.ask(symbol)
                 if result:
                     explorer.kb.clauses.add(symbol)
-                print("Entailed (forward chaining):", result)
+                print("Entailed (resolution):", result)
+                print(explorer.kb.clauses.formula())
 
-                # print("Checking with model checking...")
-                # result = model_check(explorer.kb, symbol)
-                # print("Entailed (model checking):", result)
+                
 
         except Exception as e:
             print("Error:", e)
@@ -128,14 +166,20 @@ def main():
             # explorer.kb.update_action_sentence(explorer, action_symbol, step)
             print(explorer.location)
             percepts = world.exe_action(explorer, explorer.location, parts[0])  # this assumes exe_action supports the action string
-            # explorer.kb.update_percept_sentence(explorer.location, percepts)
-            percepts = world.percept(explorer.location)
+            print(f'percepts: {percepts}')
+            print()
+            if action_type == "moveforward" and len(parts) == 2:
+                # explorer.kb.update_percept_sentence(explorer.location, percepts)
+                percepts = world.percept(explorer.location)
+                print(f'percepts: {percepts}')
+                print()
+                explorer.kb.update_percept_sentence(explorer.location, percepts)
             
-            explorer.kb.update_percept_sentence(explorer.location, percepts)
 
             print("Action executed. Updated board:")
             print(explorer.kb.clauses.formula())
             world.print_board()
+            print(explorer.location)
 
 
         except Exception as e:

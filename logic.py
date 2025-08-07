@@ -120,6 +120,8 @@ class And(Sentence):
         """ Link two set of sentences with and junction """
         Sentence.validate(conjunct)
         conjunct = to_cnf(conjunct)
+        if conjunct in self.conjuncts:
+            return
         if isinstance(conjunct, And):
             self.conjuncts.extend(conjunct.conjuncts)
         else:
@@ -540,13 +542,21 @@ import copy
 def pl_resolution(kb, query):
     """Implement resolution refutation to check if kb |= alpha."""
     # Convert KB clauses to CNF and flatten And clauses
-    clauses = []
-    for clause in kb.clauses.conjuncts:
+    clauses = kb.clauses.conjuncts.copy()
+    for clause in clauses:
         clause = to_cnf(clause)
-        if isinstance(clause, And):
-            clauses.extend(clause.conjuncts)
-        else:
-            clauses.append(clause)
+        # if isinstance(clause, And):
+
+    # print(clauses)
+    # clauses = []
+    # for clause in kb.clauses.conjuncts:
+    #     clause = to_cnf(clause)
+    #     if isinstance(clause, And):
+    #         clauses.extend(clause.conjuncts)
+    #     else:
+    #         clauses.append(clause)
+    # print(clauses)
+    
     negate_query = to_cnf(Not(query))
     if isinstance(negate_query, And):
         clauses.extend(negate_query.conjuncts)
@@ -564,7 +574,8 @@ def pl_resolution(kb, query):
         
         for (ci, cj) in pairs:
             resolvents = pl_resolve(ci, cj)
-            print(f"Resolving {ci.formula()} and {cj.formula()} -> {[r.formula() if r is not False else 'False' for r in resolvents]}")
+            if resolvents is not None:
+                print(f"Resolving {ci.formula()} and {cj.formula()} -> {[r.formula() if r is not False else 'False' for r in resolvents]}")
             if False in resolvents:
                 print("Contradiction found!")
                 return True

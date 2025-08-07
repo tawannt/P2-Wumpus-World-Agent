@@ -161,8 +161,9 @@ class WumpusEnvironment:
                 self.board[agent.location[0]][agent.location[1]].remove(agent)
                 agent.location = location
                 self.board[agent.location[0]][agent.location[1]].append(agent)
+            else:
+                percepts.append(Bump())
             agent.performance -= 1
-            percepts.append(Bump())
         elif action == 'Grab':
             grabbing = False
             for thing in self.board[y][x]:
