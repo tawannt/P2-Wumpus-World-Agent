@@ -574,19 +574,19 @@ def pl_resolution(kb, query):
         
         for (ci, cj) in pairs:
             resolvents = pl_resolve(ci, cj)
-            if resolvents is not None:
+            if len(resolvents) > 0:
                 print(f"Resolving {ci.formula()} and {cj.formula()} -> {[r.formula() if r is not False else 'False' for r in resolvents]}")
             if False in resolvents:
                 print("Contradiction found!")
                 return True
             new.update([to_cnf(r) for r in resolvents if r is not None])
         
-        print(f"New clauses: {[c.formula() for c in new]}")
+        # print(f"New clauses: {[c.formula() for c in new]}")
         normalized_new = {normalize_clause(c) for c in new}
         normalized_clauses = {normalize_clause(c) for c in clauses}
         
-        print(f"Normalized new: {[c.formula() if c is not False else 'False' for c in normalized_new]}")
-        print(f"Normalized clauses: {[c.formula() if c is not False else 'False' for c in normalized_clauses]}")
+        # print(f"Normalized new: {[c.formula() if c is not False else 'False' for c in normalized_new]}")
+        # print(f"Normalized clauses: {[c.formula() if c is not False else 'False' for c in normalized_clauses]}")
         
         if normalized_new.issubset(normalized_clauses):
             print("No new clauses, terminating.")

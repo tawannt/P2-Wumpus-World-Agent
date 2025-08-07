@@ -120,7 +120,9 @@ def main():
                 result = explorer.kb.ask(symbol)
                 if result:
                     explorer.kb.clauses.add(symbol)
+                print('#')
                 print("Entailed (resolution):", result)
+                print('#')
                 print(explorer.kb.clauses.formula())
 
                 
