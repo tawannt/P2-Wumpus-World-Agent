@@ -1,210 +1,118 @@
 import random
-from object import Stench, Breeze
-from agent import Explorer, Stench, Breeze
-from direction import Direction
-from environment import WumpusEnvironment
-from logic import Sentence, Symbol, Not, And, Or, Implication, Biconditional, model_check, forward_chaining, move_forward, shoot, grab, turn_left, turn_right, ok_to_move, to_cnf, pl_resolution, simplify_kb_with_unit
-from knowledgeBase import build_init_kb, KnowledgeBase
-
-# def main():
-#     kb = KnowledgeBase(N=3)
-#     if ('Stench', 1, 1) not in kb.symbols:
-#         kb.symbols[('Stench', 1, 1)] = Symbol(f'Stench_{1}_{1}')
-#     kb.clauses.add(kb.symbols[('Stench', 1, 1)])
-#     kb.clauses.add(Biconditional(kb.symbols[('Stench', 1, 1)], Or(Symbol('Wumpus_1_2'), Symbol('Wumpus_2_1'))))
-#     kb.clauses.add(Biconditional(kb.symbols[('Breeze', 1, 1)], Or(Symbol('Pit_1_2'), Symbol('Pit_2_1'))))
-    
-#     print(kb.clauses.formula())
-#     print()
-#     if ('Breeze', 1, 3) not in kb.symbols:
-#         kb.symbols[('Breeze', 1, 3)] = Symbol(f'Breeze_{1}_{3}')
-#     kb.clauses.add(Biconditional(kb.symbols[('Breeze', 1, 3)], Or(Symbol('Pit_1_2'), Symbol('Pit_2_3'))))
-#     kb.clauses.add(Not(kb.symbols[('Breeze', 1, 3)]))
-#     print(kb.clauses.formula())
-#     print()
-
-#     # print(kb.ask(Symbol('Pit_1_2')))
-#     # print(kb.ask(Symbol('Pit_2_1')))
-
-# if __name__ == "__main__":
-#     main()
-
-
-import random
 import time
-import ast
-def parse_logic_expression(kb, expr_str):
-    """Parse a string into a logic expression"""
-    try:
-        # Clean the input
-        expr_str = expr_str.strip()
-        
-        # Handle simple symbol names
-        if expr_str.replace('_', '').replace(' ', '').isalnum():
-            # Simple symbol - check if it exists
-            symbol_name = expr_str.replace(' ', '_')
-            for key, symbol in kb.symbols.items():
-                if symbol.name == symbol_name:
-                    return symbol
-            # If not found, create new symbol
-            return Symbol(symbol_name)
-        
-        # For complex expressions, we need to parse them
-        # This is a simplified parser - in practice you might want a more robust one
-        
-        # Replace common patterns
-        expr_str = expr_str.replace('NOT', 'Not')
-        expr_str = expr_str.replace('AND', 'And')
-        expr_str = expr_str.replace('OR', 'Or')
-        expr_str = expr_str.replace('IMPLIES', 'Implication')
-        expr_str = expr_str.replace('=>', ', ')
-        
-        # Create namespace with logic classes and available symbols
-        namespace = {
-            'Symbol': Symbol,
-            'Not': Not,
-            'And': And,
-            'Or': Or,
-            'Implication': Implication,
-            'Biconditional': Biconditional
-        }
-        
-        # Add all symbols from KB to namespace
-        for key, symbol in kb.symbols.items():
-            namespace[symbol.name] = symbol
-        
-        # Try to evaluate the expression
-        result = eval(expr_str, {"__builtins__": {}}, namespace)
-        return result
-            
-    except Exception as e:
-        raise ValueError(f"Failed to parse expression: {e}")
+from collections import defaultdict
+from environment import WumpusEnvironment
+from knowledgeBase import build_init_kb
+from agent import Explorer
+from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream
+from logic import Sentence, Symbol, Not, And, Or, Implication, Biconditional
+
 
 def main():
-    random.seed(time.time())
-    N = 3
-    world = WumpusEnvironment(N=N, K_wumpuses=0, pit_probability=0.2)
-    kb = build_init_kb(N, world)
-    explorer = Explorer(kb=kb)
-    world.board[1][1].append(explorer)
-    world.agents.append(explorer)
-
-    print("Initial Wumpus World:")
-    world.print_board()
-    print()
-    print(explorer.kb.clauses.formula())
-
-    # kb = KnowledgeBase(N=3)
-    # kb.clauses.add(Symbol('Breeze_1_1'))
-    # kb.clauses.add(Not(Symbol('Pit_1_1')))
-    # kb.clauses.add(Implication(Symbol('Breeze_1_1'), Or(Symbol('Pit_2_1'), Symbol('Pit_1_2'))))
-    # print(kb.clauses.formula())
-    # print(kb.ask(Symbol('Pit_2_1')))  # Should be False
-    # kb.clauses.add(Not(Symbol('Pit_1_2')))
-    # print()
-    # print()
-    # print()
-    # print()
-    # print(kb.clauses.formula())
-    # print(kb.ask(Symbol('Pit_2_1')))  # Should be True
-    while True:
-        print("\n--- QUERY PHASE ---")
-        try:
-            # num_query = int(input("Num queries: "))
-            # for i in range(num_query):
-            #     query_input = input("Enter a query tuple (e.g., ('Pit', 2, 1)): ")
-                
-            #     symbol = parse_logic_expression(kb, query_input)
-            #     print("Checking with resolution...")
-            #     # result = forward_chaining(explorer.kb, symbol)
-            #     result = explorer.kb.ask(symbol)
-            #     if result:
-            #         explorer.kb.clauses.add(symbol)
-            #         simplify_kb_with_unit(explorer.kb, symbol)
-            #     print('#')
-            #     print("Entailed (resolution):", result)
-            #     print('#')
-            #     print(explorer.kb.clauses.formula())
+    random.seed(time.time())  # For reproducibility
+    # Initialize environment: 4x4 grid, 1 Wumpus, 20% pit probability
+    N = 4
+    env = WumpusEnvironment(N=N, K_wumpuses=0, pit_probability=0.2)
+    
+    # Initialize knowledge base with single_wumpus=False for multi-Wumpus compatibility
+    kb = build_init_kb(N, env)
+    
+    # Initialize explorer at (1,1) with the KB
+    agent = Explorer(kb, pos=(1, 1))
+    env.agents.append(agent)
+    env.board[1][1].append(agent)
+    
+    step = 0
+    max_steps = 100  # Prevent infinite loops
+    
+    print("Initial Board:")
+    env.print_board()
+    print("\nAvailable actions: MoveForward, TurnLeft, TurnRight, Grab, Shoot, Climb")
+    action = None
+    percepts = []
+    while not env.is_end() and step < max_steps:
+        print(f"\nStep {step}: Agent at {agent.location}, Direction: {agent.direction.direction}")
+        
+        if action == 'MoveForward' or action == 'Shoot' or action == None:
+            # Check if current position is safe
+            y, x = agent.location
+            is_current_safe = kb.ask(Not(kb.symbols[('Pit', y, x)])) and kb.ask(Not(kb.symbols[('Wumpus', y, x)]))
+            if not is_current_safe and (y, x) not in agent.visited:
+                print(f"Warning: Current position {agent.location} may be unsafe!")
+                env.in_danger(agent)  # Check if agent is killed
+                if not agent.alive:
+                    break
+        
+        # Get percepts at current position
+        if action == 'MoveForward' or action == 'Shoot' or action == None:
+            percepts = env.percept(agent.location)
+            print(f"Percepts: {[type(p).__name__ for p in percepts]}")
+        
+            # Update KB with percepts
+            kb.update_percept_sentence(agent.location, percepts)
             
-            for y in range(1, 4):
-                for x in range(1, 4):
-                    if (y, x) in explorer.kb.visited:
-                        continue
-                    print(f'y,x = {y}, {x}')
-                    query_input = Not(explorer.kb.symbols[('Pit', y, x)])
-                    print("Checking with resolution...")
-                    # result = forward_chaining(explorer.kb, symbol)
-                    result = explorer.kb.ask(query_input)
-                    if result:
-                        explorer.kb.clauses.add(query_input)
-                        simplify_kb_with_unit(explorer.kb, query_input)
-                    print('#')
-                    print("Entailed (resolution):", result)
-                    print('#')
-                    print(explorer.kb.clauses.formula())
-
-                
-
-        except Exception as e:
-            print("Error:", e)
-            continue
-
-        print("\n--- ACTION PHASE ---")
-        try:
-            
-            action_input = input("Enter action (e.g., TurnLeft 0, Shoot 2 1 right 3): ")
-            parts = action_input.strip().split()
-
-            if not parts:
-                continue
-
-            action_type = parts[0].lower()
-
-            if action_type == "turnleft" and len(parts) == 2:
-                step = int(parts[1])
-                action_symbol = turn_left(step)
-            elif action_type == "turnright" and len(parts) == 2:
-                step = int(parts[1])
-                action_symbol = turn_right(step)
-            elif action_type == "moveforward" and len(parts) == 2:
-                step = int(parts[1])
-                action_symbol = move_forward(step)
-            elif action_type == "grab" and len(parts) == 3:
-                y, x = int(parts[1]), int(parts[2])
-                step = int(input("Enter step: "))
-                action_symbol = grab((y, x), step)
-            elif action_type == "shoot" and len(parts) == 5:
-                y, x = int(parts[1]), int(parts[2])
-                direction = parts[3]
-                step = int(parts[4])
-                action_symbol = shoot((y, x), direction, step)
-            else:
-                print("Unknown or badly formatted action.")
-                continue
-
-            # Update KB with action
-            # explorer.kb.update_action_sentence(explorer, action_symbol, step)
-            print(explorer.location)
-            percepts = world.exe_action(explorer, explorer.location, parts[0])  # this assumes exe_action supports the action string
-            print(f'percepts: {percepts}')
-            print()
-            if action_type == "moveforward" and len(parts) == 2:
-                # explorer.kb.update_percept_sentence(explorer.location, percepts)
-                percepts = world.percept(explorer.location)
-                print(f'percepts: {percepts}')
-                print()
-                explorer.kb.update_percept_sentence(explorer.location, percepts)
-            
-
-            print("Action executed. Updated board:")
-            print(explorer.kb.clauses.formula())
-            world.print_board()
-            print(explorer.location)
-
-
-        except Exception as e:
-            print("Error:", e)
-
+            # Check for glitter (gold) and suggest grabbing
+            if any(isinstance(p, Glitter) for p in percepts):
+                print("Gold detected! You can use 'Grab' to pick it up.")
+        
+            # Check adjacent cells for safety
+            adjacent = [
+                (y + 1, x) if y < N else None,  # Up
+                (y - 1, x) if y > 1 else None,  # Down
+                (y, x + 1) if x < N else None,  # Right
+                (y, x - 1) if x > 1 else None   # Left
+            ]
+            safe_adjacent = []
+            for pos in adjacent:
+                if pos and env.is_in_map(pos):
+                    if (kb.ask(Not(kb.symbols[('Pit', pos[0], pos[1])]))) and \
+                    kb.ask(Not(kb.symbols[('Wumpus', pos[0], pos[1])])) or \
+                    pos in agent.visited:
+                        safe_adjacent.append(pos)
+            print(f"Safe adjacent cells: {safe_adjacent}")
+        
+        # Prompt for user action
+        valid_actions = ['MoveForward', 'TurnLeft', 'TurnRight', 'Grab', 'Shoot', 'Climb']
+        if not agent.has_arrow:
+            valid_actions.remove('Shoot')
+        if not any(isinstance(p, Glitter) for p in percepts):
+            valid_actions.remove('Grab')
+        if agent.location != (1, 1):
+            valid_actions.remove('Climb')
+        
+        print(f"Valid actions: {', '.join(valid_actions)}")
+        while True:
+            action = input("Enter action: ").strip()
+            if action in valid_actions:
+                break
+            print(f"Invalid action! Choose from: {', '.join(valid_actions)}")
+        
+        # Execute action
+        print(f"Action: {action}")
+        percepts = env.exe_action(agent, agent.location, action)
+        kb.update_action_sentence(agent, f"{action}_{agent.location[0]}_{agent.location[1]}_{step}", step)
+        if action is 'MoveForward':
+            for percept in percepts:  # Safe since exe_action returns a list
+                kb.update_percept_sentence(agent.location, [percept])
+        
+        print("Board after action:")
+        env.print_board()
+        
+        # Check if action caused death
+        if not agent.alive:
+            break
+        
+        step += 1
+    
+    print(f"\nGame ended after {step} steps.")
+    print(f"Agent performance: {agent.performance}")
+    if not agent.alive:
+        print(f"Agent died: {agent.killed_by}")
+    elif env.gold_taken:
+        print("Agent won with gold!")
+    else:
+        print("Agent climbed out without gold.")
 
 if __name__ == "__main__":
+    
     main()

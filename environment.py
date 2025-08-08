@@ -1,8 +1,8 @@
 import random
-import time
 from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream
 from agent import Explorer, Wumpus
 from direction import Direction
+
 
 class WumpusEnvironment:
     def __init__(self, N=8, K_wumpuses=2, pit_probability=0.2):
@@ -144,9 +144,9 @@ class WumpusEnvironment:
     def exe_action(self, agent, pos, action):
         y, x = pos[:2]
         arrow_direction = Direction(agent.direction.direction)
-        if isinstance(agent, Explorer) and self.in_danger(agent):
-            return
         percepts = []
+        if isinstance(agent, Explorer) and self.in_danger(agent):
+            return percepts  # Return empty percepts if agent is killed
         agent.bump = False
         if action == 'TurnRight':
             agent.direction += Direction.R
@@ -171,6 +171,7 @@ class WumpusEnvironment:
                     agent.holding.append(thing)
                     print("Grabbing ", thing.__class__.__name__)
                     self.board[y][x].remove(thing)
+                    self.gold_taken = True  # Update gold_taken
                     agent.performance += 10
                     grabbing = True
             if not grabbing:
@@ -179,6 +180,7 @@ class WumpusEnvironment:
             if agent.location == (1, 1):  # Agent can only climb out of (1,1)
                 agent.performance += 1000 if Gold() in agent.holding else 0
                 self.board[y][x].remove(agent)
+                self.agents.remove(agent)  # Remove agent from environment
         elif action == 'Shoot':
             """The arrow travels straight down the path the agent is facing"""
             if agent.has_arrow:
@@ -187,13 +189,14 @@ class WumpusEnvironment:
                 while self.is_in_map(arrow_travel):
                     arrow_y, arrow_x = arrow_travel[:2]
                     wumpuses = [thing for thing in self.board[arrow_y][arrow_x]
-                              if isinstance(thing, Wumpus)]
+                                if isinstance(thing, Wumpus)]
                     if len(wumpuses):
                         wumpuses[0].alive = False
                         self.k_wumpuses -= 1
                         self.wumpus_pos.remove((arrow_y, arrow_x))
                         self.board[arrow_y][arrow_x].remove(wumpuses[0])
                         percepts.append(Scream())
+                        self.update_stench()  # Update stench after Wumpus death
                         break
                     arrow_travel = arrow_direction.move_forward(arrow_travel)
                 agent.has_arrow = False

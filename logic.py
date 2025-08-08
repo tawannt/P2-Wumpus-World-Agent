@@ -1,32 +1,21 @@
-from collections import defaultdict
-import itertools
-import copy
-
-class Sentence():
-    """ A logic sentence """
+class Sentence:
     def evaluate(self, model):
-        """Evaluates the logical sentence."""
         raise Exception("nothing to evaluate")
 
     def formula(self):
-        """Returns string formula representing logical sentence."""
         return ""
 
     def symbols(self):
-        """Returns a set of all symbols in the logical sentence."""
         return set()
 
     @classmethod
     def validate(cls, sentence):
-        """ Determine if the object is a sentence """
         if not isinstance(sentence, Sentence):
             raise TypeError("must be a logical sentence")
 
     @classmethod
     def parenthesize(cls, string):
-        """Parenthesizes an expression if not already parenthesized."""
         def balanced(string):
-            """Checks if a string has balanced parentheses."""
             count = 0
             for char in string:
                 if char == "(":
@@ -40,12 +29,9 @@ class Sentence():
             string[0] == "(" and string[-1] == ")" and balanced(string[1:-1])
         ):
             return string
-
         return f"({string})"
 
-
 class Symbol(Sentence):
-    """ Logic symbols """
     def __init__(self, name):
         self.name = name
 
@@ -70,9 +56,7 @@ class Symbol(Sentence):
     def symbols(self):
         return {self.name}
 
-
 class Not(Sentence):
-    """ Logic connective NOT """
     def __init__(self, operand):
         Sentence.validate(operand)
         self.operand = operand
@@ -96,7 +80,6 @@ class Not(Sentence):
         return self.operand.symbols()
 
 class And(Sentence):
-    """ Logic connective AND """
     def __init__(self, *conjuncts):
         for conjunct in conjuncts:
             Sentence.validate(conjunct)
@@ -106,18 +89,13 @@ class And(Sentence):
         return isinstance(other, And) and self.conjuncts == other.conjuncts
 
     def __hash__(self):
-        return hash(
-            ("and", tuple(hash(conjunct) for conjunct in self.conjuncts))
-        )
+        return hash(("and", tuple(hash(conjunct) for conjunct in self.conjuncts)))
 
     def __repr__(self):
-        conjunctions = ", ".join(
-            [str(conjunct) for conjunct in self.conjuncts]
-        )
+        conjunctions = ", ".join([str(conjunct) for conjunct in self.conjuncts])
         return f"And({conjunctions})"
 
     def add(self, conjunct):
-        """ Link two set of sentences with and junction """
         Sentence.validate(conjunct)
         conjunct = to_cnf(conjunct)
         if conjunct in self.conjuncts:
@@ -133,15 +111,12 @@ class And(Sentence):
     def formula(self):
         if len(self.conjuncts) == 1:
             return self.conjuncts[0].formula()
-        return " \n ".join([Sentence.parenthesize(conjunct.formula())
-                           for conjunct in self.conjuncts])
+        return " \n ".join([Sentence.parenthesize(conjunct.formula()) for conjunct in self.conjuncts])
 
     def symbols(self):
         return set.union(*[conjunct.symbols() for conjunct in self.conjuncts])
 
-
 class Or(Sentence):
-    """ Logic connective OR """
     def __init__(self, *disjuncts):
         for disjunct in disjuncts:
             Sentence.validate(disjunct)
@@ -151,16 +126,13 @@ class Or(Sentence):
         return isinstance(other, Or) and self.disjuncts == other.disjuncts
 
     def __hash__(self):
-        return hash(
-            ("or", tuple(hash(disjunct) for disjunct in self.disjuncts))
-        )
+        return hash(("or", tuple(hash(disjunct) for disjunct in self.disjuncts)))
 
     def __repr__(self):
         disjuncts = ", ".join([str(disjunct) for disjunct in self.disjuncts])
         return f"Or({disjuncts})"
-    
+
     def add(self, disjunct):
-        """ Link two set of sentences with and junction """
         Sentence.validate(disjunct)
         self.disjuncts.append(disjunct)
 
@@ -170,14 +142,12 @@ class Or(Sentence):
     def formula(self):
         if len(self.disjuncts) == 1:
             return self.disjuncts[0].formula()
-        return " ∨  ".join([Sentence.parenthesize(disjunct.formula())
-                            for disjunct in self.disjuncts])
+        return " ∨ ".join([Sentence.parenthesize(disjunct.formula()) for disjunct in self.disjuncts])
 
     def symbols(self):
         return set.union(*[disjunct.symbols() for disjunct in self.disjuncts])
 
 class Implication(Sentence):
-    """ Logic connective Implication """
     def __init__(self, antecedent, consequent):
         Sentence.validate(antecedent)
         Sentence.validate(consequent)
@@ -185,9 +155,9 @@ class Implication(Sentence):
         self.consequent = consequent
 
     def __eq__(self, other):
-        return (isinstance(other, Implication)
-                and self.antecedent == other.antecedent
-                and self.consequent == other.consequent)
+        return (isinstance(other, Implication) and
+                self.antecedent == other.antecedent and
+                self.consequent == other.consequent)
 
     def __hash__(self):
         return hash(("implies", hash(self.antecedent), hash(self.consequent)))
@@ -196,8 +166,7 @@ class Implication(Sentence):
         return f"Implication({self.antecedent}, {self.consequent})"
 
     def evaluate(self, model):
-        return ((not self.antecedent.evaluate(model))
-                or self.consequent.evaluate(model))
+        return (not self.antecedent.evaluate(model)) or self.consequent.evaluate(model)
 
     def formula(self):
         antecedent = Sentence.parenthesize(self.antecedent.formula())
@@ -207,9 +176,7 @@ class Implication(Sentence):
     def symbols(self):
         return set.union(self.antecedent.symbols(), self.consequent.symbols())
 
-
 class Biconditional(Sentence):
-    """ Logic connective Biconditional """
     def __init__(self, left, right):
         Sentence.validate(left)
         Sentence.validate(right)
@@ -217,9 +184,9 @@ class Biconditional(Sentence):
         self.right = right
 
     def __eq__(self, other):
-        return (isinstance(other, Biconditional)
-                and self.left == other.left
-                and self.right == other.right)
+        return (isinstance(other, Biconditional) and
+                self.left == other.left and
+                self.right == other.right)
 
     def __hash__(self):
         return hash(("biconditional", hash(self.left), hash(self.right)))
@@ -228,10 +195,8 @@ class Biconditional(Sentence):
         return f"Biconditional({self.left}, {self.right})"
 
     def evaluate(self, model):
-        return ((self.left.evaluate(model)
-                 and self.right.evaluate(model))
-                or (not self.left.evaluate(model)
-                    and not self.right.evaluate(model)))
+        return ((self.left.evaluate(model) and self.right.evaluate(model)) or
+                (not self.left.evaluate(model) and not self.right.evaluate(model)))
 
     def formula(self):
         left = Sentence.parenthesize(str(self.left))
@@ -241,78 +206,8 @@ class Biconditional(Sentence):
     def symbols(self):
         return set.union(self.left.symbols(), self.right.symbols())
 
-
-
-def forward_chaining(kb, query):
-    # get facts (not including 'negative fact')
-    facts = [clause for clause in kb.clauses.conjuncts if isinstance(clause, Symbol)]
-    inferred = defaultdict(bool)
-    # dict -> the number symbol in premise
-    count = dict()
-    for c in kb.clauses.conjuncts:
-        if isinstance(c, Implication):
-            if isinstance(c.antecedent, And):
-                count[c] = len(c.antecedent.conjuncts)
-            else:
-                count[c] = 1
-
-    # rules = kb_with_premise(kb.clauses)
-    while facts:
-        fact = facts.pop()
-        print(fact)
-        if fact == query:
-            return True
-        if not inferred[fact]:
-            inferred[fact] = True
-            for rule in kb.list_clauses_with_premise(fact):
-                print(f'rule: {rule}')
-                count[rule] -= 1
-                if count[rule] == 0:
-                    facts.append(rule.consequent)
-    return False
-
-
-def model_check(kb, query):
-    """Checks if knowledge base entails query."""
-    knowledge = kb.clauses
-    def check_all(knowledge, query, symbols, model):
-        """Checks if knowledge base entails query, given a particular model."""
-
-        # If model has an assignment for each symbol
-        if not symbols:
-
-            # If knowledge base is true in model, then query must also be true
-            if knowledge.evaluate(model):
-                return query.evaluate(model)
-            return True
-        else:
-
-            # Choose one of the remaining unused symbols
-            remaining = symbols.copy()
-            top = remaining.pop()
-
-            # Create a model where the symbol is true
-            model_true = model.copy()
-            model_true[top] = True
-
-            # Create a model where the symbol is false
-            model_false = model.copy()
-            model_false[top] = False
-
-            # Ensure entailment holds in both models
-            return (check_all(knowledge, query, remaining, model_true) and
-                    check_all(knowledge, query, remaining, model_false))
-
-    # Get all symbols in both knowledge and query
-    symbols = set.union(knowledge.symbols(), query.symbols())
-    # Check that knowledge entails query
-    return check_all(knowledge, query, symbols, dict())
-
-
-
 def move_forward(step):
     return Symbol(f'MoveForward_{step}')
-
 
 def shoot(from_location, direction, step):
     y, x = from_location[:2]
@@ -321,25 +216,17 @@ def shoot(from_location, direction, step):
 def grab(from_location, step):
     y, x = from_location[:2]
     return Symbol(f'Grab_{y}_{x}_{step}')
-# def turn_left(from_location):
-#     y, x = from_location[:2]
-#     return Symbol(f'TurnLeft_{y}_{x}')
+
 def turn_left(step):
     return Symbol(f'TurnLeft_{step}')
 
-
-# def turn_right(from_location):
-#     y, x = from_location[:2]
-#     return Symbol(f'TurnRight_{y}_{x}')
 def turn_right(step):
     return Symbol(f'TurnRight_{step}')
-
 
 def ok_to_move(x, y):
     return Symbol(f'OK_{y}_{x}')
 
 def flatten_or(sent):
-    """Recursively flatten nested Or operations."""
     if isinstance(sent, Or):
         flat_disjuncts = []
         for d in sent.disjuncts:
@@ -355,10 +242,7 @@ def flatten_or(sent):
         return Not(flatten_or(sent.operand))
     return sent
 
-
 def to_cnf(sentence):
-    """Convert a logical sentence to Conjunctive Normal Form (CNF), flattening nested Or operations."""
-    
     def eliminate_implications(sent):
         if isinstance(sent, Implication):
             antecedent = eliminate_implications(sent.antecedent)
@@ -394,7 +278,6 @@ def to_cnf(sentence):
         return sent
 
     def distribute_or_over_and(sent):
-        """Distribute OR over AND to convert to CNF."""
         if isinstance(sent, Symbol) or (isinstance(sent, Not) and isinstance(sent.operand, Symbol)):
             return sent
         if isinstance(sent, Or):
@@ -412,224 +295,59 @@ def to_cnf(sentence):
             return And(*[distribute_or_over_and(c) for c in sent.conjuncts])
         return sent
 
-    # Step-by-step conversion with flattening
-    sent = flatten_or(sentence)  # Flatten input
+    sent = flatten_or(sentence)
     sent = eliminate_implications(sent)
-    sent = flatten_or(sent)  # Flatten after implications
+    sent = flatten_or(sent)
     sent = move_not_inwards(sent)
-    sent = flatten_or(sent)  # Flatten after negations
+    sent = flatten_or(sent)
     sent = distribute_or_over_and(sent)
-    sent = flatten_or(sent)  # Flatten final result
+    sent = flatten_or(sent)
     return sent
 
-
-# def pl_resolution(kb, query):
-#     """Implement resolution refutation to check if kb |= alpha."""
-#     # Convert kb and ¬alpha to CNF
-#     # newkb = copy.deepcopy(kb)
-#     # newkb.clauses.add(Not(alpha))
-#     # print(newKB.clauses.formula())
-#     clauses = kb.clauses.conjuncts.copy()
-#     negate_query = Not(query)
-#     clauses.append(negate_query)
-#     # print(clauses)
-#     new = set()
-#     index = 0
-#     while True:
-#     # for i in range(2):
-#         n = len(clauses)
-#         pairs = [(clauses[i], clauses[j])
-#                  for i in range(n) for j in range(i + 1, n)]
-#         # print(f'pairs:{pairs}')
-#         # print()
-#         for (ci, cj) in pairs:
-#             resolvents = pl_resolve(ci, cj, index)
-#             if False in resolvents:
-#                 return True
-#             new = new.union(set(resolvents))
-#         print(f'new:{new}')
-#         if new.issubset(set(clauses)):
-#             return False
-#         for c in new:
-#             if c not in clauses:
-#                 clauses.append(c)
-#         # print(clauses)
-#         index += 1
-        
-    
-
-# def pl_resolve(Ci, Cj):
-    # print(f'ci:{Ci}')
-#     print(f'cj:{Cj}')
-#     print()
-#     """Resolve two clauses to produce resolvents."""
-#     resolvents = set()
-#     if isinstance(Ci, Or) and isinstance(Cj, Or):
-#         for li in Ci.disjuncts:
-#             for lj in Cj.disjuncts:
-#                 if isinstance(li, Not) and isinstance(lj, Symbol) and li.operand == lj:
-#                     resolvents.add(Cj)
-#                 elif isinstance(lj, Not) and isinstance(li, Symbol) and lj.operand == li:
-#                     resolvents.add(Ci)
-#     return list(resolvents)
-# def pl_resolve(ci, cj, index):
-#     """Return all resolvent clauses from resolving ci and cj."""
-#     resolvents = []
-
-#     # Get disjuncts from both ci and cj
-#     # if isinstance(ci, Or):
-#         # print(f'OR: {ci.disjuncts}')
-#     disjuncts_ci = ci.disjuncts if isinstance(ci, Or) else [ci]
-#     disjuncts_cj = cj.disjuncts if isinstance(cj, Or) else [cj]
-
-#     # print('-')
-#     # print(f'disjucts_ci:{disjuncts_ci}')
-#     # print(f'disjucts_cj:{disjuncts_cj}')
-#     # print('-')
-
-#     for di in disjuncts_ci:
-#         for dj in disjuncts_cj:
-#             # Check if di and dj are complementary
-#             # print(f'1: {di} and {dj}')
-#             # print('___')
-#             # print('___')
-#             if (isinstance(di, Not) and di.operand == dj) or (isinstance(dj, Not) and dj.operand == di):
-#                 # print(f'2: {di} and {dj}')
-#                 # print()
-#                 # Remove di and dj
-#                 # print(f'disjuncts_cj:{disjuncts_cj}')
-#                 # print(f'disjuncts_ci:{disjuncts_ci}')
-                
-#                 rest_di = [d for d in disjuncts_ci if d != di]
-#                 rest_dj = [d for d in disjuncts_cj if d != dj]
-#                 # print(f'disjuncts_cj_after:{rest_dj}')
-#                 # print(f'disjuncts_ci_after:{rest_di}')
-#                 combined = rest_di + rest_dj
-#                 # print(combined)
-
-#                 # Remove duplicates
-#                 unique_literals = []
-#                 for lit in combined:
-#                     if lit not in unique_literals:
-#                         unique_literals.append(lit)
-#                 # print(f'unique:{unique_literals}')
-#                 # If nothing left => empty clause (contradiction)
-#                 if len(unique_literals) == 0:
-#                     # print(f'3: {di} and {dj}')
-#                     return [False]  # Representing contradiction
-
-#                 # Otherwise, return new clause (Or if multiple, else single literal)
-#                 if len(unique_literals) == 1:
-#                     resolvents.append(unique_literals[0])
-#                 else:
-#                     resolvents.append(Or(*unique_literals))
-#                 # print(f'resolvents: {resolvents}')
-#     # print(f'FINAL resolvents: {resolvents}')
-
-#     return flatten_or(resolvents)
-
-from collections import defaultdict
-import itertools
-import copy
-
-from collections import defaultdict
-import itertools
-import copy
-
-# [Previous Sentence, Symbol, Not, And, Or, Implication, Biconditional classes unchanged]
-# [Previous to_cnf, flatten_or, and other functions unchanged]
-
-def pl_resolution(kb, query):
-    """Implement resolution refutation to check if kb |= alpha."""
-    # Convert KB clauses to CNF and flatten And clauses
-    clauses = kb.clauses.conjuncts.copy()
-    for clause in clauses:
-        clause = to_cnf(clause)
-        # if isinstance(clause, And):
-
-    # print(clauses)
-    # clauses = []
-    # for clause in kb.clauses.conjuncts:
-    #     clause = to_cnf(clause)
-    #     if isinstance(clause, And):
-    #         clauses.extend(clause.conjuncts)
-    #     else:
-    #         clauses.append(clause)
-    # print(clauses)
-    
-    negate_query = to_cnf(Not(query))
-    if isinstance(negate_query, And):
-        clauses.extend(negate_query.conjuncts)
+def negation(literal):
+    if isinstance(literal, Symbol):
+        return Not(literal)
+    elif isinstance(literal, Not):
+        return literal.operand
     else:
-        clauses.append(negate_query)
-    
-    print("Initial clauses:", [c.formula() for c in clauses])
-    
-    new = set()
-    iteration = 0
-    while True:
-        print(f"\nIteration {iteration}:")
-        n = len(clauses)
-        pairs = [(clauses[i], clauses[j]) for i in range(n) for j in range(i + 1, n)]
-        
-        for (ci, cj) in pairs:
-            resolvents = pl_resolve(ci, cj)
-            # if len(resolvents) > 0:
-                # print(f"Resolving {ci.formula()} and {cj.formula()} -> {[r.formula() if r is not False else 'False' for r in resolvents]}")
-            if False in resolvents:
-                print("Contradiction found!")
-                return True
-            new.update([to_cnf(r) for r in resolvents if r is not None])
-        
-        # print(f"New clauses: {[c.formula() for c in new]}")
-        normalized_new = {normalize_clause(c) for c in new}
-        normalized_clauses = {normalize_clause(c) for c in clauses}
-        
-        # print(f"Normalized new: {[c.formula() if c is not False else 'False' for c in normalized_new]}")
-        # print(f"Normalized clauses: {[c.formula() if c is not False else 'False' for c in normalized_clauses]}")
-        # print()
-        
-        if normalized_new.issubset(normalized_clauses):
-            print("No new clauses, terminating.")
-            return False
-        
-        clauses.extend([c for c in new if normalize_clause(c) not in normalized_clauses])
-        new.clear()
-        iteration += 1
+        raise ValueError("Invalid literal")
 
-    
-def pl_resolve(ci, cj):
-    """Return all resolvent clauses from resolving ci and cj."""
-    resolvents = []
-    
-    disjuncts_ci = ci.disjuncts if isinstance(ci, Or) else [ci]
-    disjuncts_cj = cj.disjuncts if isinstance(cj, Or) else [cj]
-    
-    for di in disjuncts_ci:
-        for dj in disjuncts_cj:
-            if (isinstance(di, Not) and di.operand == dj) or (isinstance(dj, Not) and dj.operand == di):
-                rest_di = [d for d in disjuncts_ci if d != di]
-                rest_dj = [d for d in disjuncts_cj if d != dj]
-                combined = rest_di + rest_dj
-                
-                unique_literals = []
-                seen_formulas = set()
-                for lit in combined:
-                    formula = lit.formula()
-                    if formula not in seen_formulas:
-                        unique_literals.append(lit)
-                        seen_formulas.add(formula)
-                
-                if not unique_literals:
-                    resolvents.append(False)
-                else:
-                    resolvent = unique_literals[0] if len(unique_literals) == 1 else Or(*unique_literals)
-                    resolvents.append(resolvent)
-    
-    return resolvents
+# def get_literals(clause):
+#     if isinstance(clause, Or):
+#         return clause.disjuncts
+#     elif isinstance(clause, (Symbol, Not)):
+#         return [clause]
+#     return []
+
+
+# def simplify_kb_with_unit(kb, unit):
+#     negation_unit = negation(unit)
+#     new_clauses = []
+#     for clause in kb.clauses.conjuncts:
+#         literals = get_literals(clause)
+#         if unit in literals:
+#             continue
+#         elif negation_unit in literals:
+#             new_literals = [lit for lit in literals if lit != negation_unit]
+#             if new_literals:
+#                 new_clause = Or(*new_literals) if len(new_literals) > 1 else new_literals[0]
+#                 if not is_tautology(new_clause):
+#                     new_clauses.append(new_clause)
+#         else:
+#             if not is_tautology(clause):
+#                 new_clauses.append(clause)
+#     if unit not in new_clauses:
+#         new_clauses.append(unit)
+#     unique_clauses = []
+#     seen = set()
+    # for clause in new_clauses:
+    #     clause_str = clause.formula()
+    #     if clause_str not in seen:
+    #         seen.add(clause_str)
+    #         unique_clauses.append(clause)
+    # kb.clauses = And(*unique_clauses)
 
 def normalize_clause(clause):
-    """Normalize a clause for comparison (e.g., sort disjuncts)."""
     if clause is False:
         return False
     if isinstance(clause, Or):
@@ -638,85 +356,148 @@ def normalize_clause(clause):
     if isinstance(clause, Symbol) or isinstance(clause, Not):
         return clause
     raise ValueError(f"Unexpected clause type: {type(clause)}")
-
-
-def is_unit(clause):
-    """Check if a clause is a unit (single literal)."""
-    return isinstance(clause, Symbol) or (isinstance(clause, Not) and isinstance(clause.operand, Symbol))
-
-# Ensure `simplify_kb_with_unit`, `is_tautology`, `to_cnf`, etc., are as provided in your original code
-
-def negation(literal):
-    """Returns the negation of a literal."""
-    if isinstance(literal, Symbol):
-        return Not(literal)
-    elif isinstance(literal, Not):
-        return literal.operand
-    else:
-        raise ValueError("Invalid literal")
-
-def get_literals(clause):
-    """Returns the list of literals in a clause."""
-    if isinstance(clause, Or):
-        return clause.disjuncts
-    elif isinstance(clause, (Symbol, Not)):
-        return [clause]
-    return []
-
 def is_tautology(clause):
-    """Checks if a clause is a tautology (e.g., A ∨ ¬A)."""
-    literals = get_literals(clause)
-    positives = {lit for lit in literals if isinstance(lit, Symbol)}
-    negatives = {lit.operand for lit in literals if isinstance(lit, Not)}
-    return bool(positives & negatives)
+    """Check if a clause is a tautology (e.g., A ∨ ¬A)."""
+    if isinstance(clause, Or):
+        literals = set(lit.formula() for lit in clause.disjuncts)
+        for lit in clause.disjuncts:
+            if isinstance(lit, Symbol) and f"¬{lit.formula()}" in literals:
+                return True
+            if isinstance(lit, Not) and lit.operand.formula() in literals:
+                return True
+    return False
 
+def simplify_clause(clause, unit_clauses):
+    """Simplify a clause using unit clauses, ensuring proper propagation."""
+    if isinstance(clause, Or):
+        literals = [lit for lit in clause.disjuncts]
+        for unit in unit_clauses:
+            neg_unit = negation(unit)
+            if unit in literals:
+                return None  # Clause is satisfied (e.g., unit is true)
+            if neg_unit in literals:
+                literals = [lit for lit in literals if lit != neg_unit]
+        if not literals:
+            return False  # Clause is contradicted
+        return Or(*literals) if len(literals) > 1 else literals[0]
+    elif isinstance(clause, (Symbol, Not)):
+        neg_clause = negation(clause)
+        if clause in unit_clauses:
+            return None  # Clause is satisfied
+        if neg_clause in unit_clauses:
+            return False  # Clause is contradicted
+        return clause
+    return clause
 
-def simplify_kb_with_unit(kb, unit):
-    """
-    Simplifies the KB after adding a new unit clause known to be true.
-    
-    Args:
-        kb: KnowledgeBase object
-        unit: A Symbol or Not(Symbol) that is true
-    """
-    negation_unit = negation(unit)
-    new_clauses = []
-    
-    # Process each clause in the KB
-    for clause in kb.clauses.conjuncts:
-        literals = get_literals(clause)
-        
-        # Skip clauses containing the unit (they are satisfied)
-        if unit in literals:
-            continue
-        
-        # Simplify clauses containing the negation of the unit
-        elif negation_unit in literals:
-            new_literals = [lit for lit in literals if lit != negation_unit]
-            if new_literals:
-                new_clause = Or(*new_literals) if len(new_literals) > 1 else new_literals[0]
-                if not is_tautology(new_clause):
-                    new_clauses.append(new_clause)
-                    # Note: If new_clause is a unit, we could recurse, but we'll keep it simple for now
+def pl_resolve(ci, cj):
+    """Resolve two clauses, returning a list of resolvents."""
+    resolvents = []
+    disjuncts_ci = ci.disjuncts if isinstance(ci, Or) else [ci]
+    disjuncts_cj = cj.disjuncts if isinstance(cj, Or) else [cj]
+    for di in disjuncts_ci:
+        for dj in disjuncts_cj:
+            if (isinstance(di, Not) and di.operand == dj) or (isinstance(dj, Not) and dj.operand == di):
+                rest_di = [d for d in disjuncts_ci if d != di]
+                rest_dj = [d for d in disjuncts_cj if d != dj]
+                combined = rest_di + rest_dj
+                if not combined:
+                    resolvents.append(False)
+                else:
+                    unique_literals = []
+                    seen_formulas = set()
+                    for lit in sorted(combined, key=lambda x: x.formula()):
+                        formula = lit.formula()
+                        if formula not in seen_formulas:
+                            unique_literals.append(lit)
+                            seen_formulas.add(formula)
+                    if unique_literals and not is_tautology(Or(*unique_literals)):
+                        resolvent = unique_literals[0] if len(unique_literals) == 1 else Or(*unique_literals)
+                        resolvents.append(resolvent)
+    return resolvents
+
+def flatten_and_clauses(clauses):
+    """Flatten And clauses into a list of CNF clauses."""
+    result = []
+    for clause in clauses:
+        if isinstance(clause, And):
+            result.extend(flatten_and_clauses(clause.conjuncts))
         else:
-            if not is_tautology(clause):
-                new_clauses.append(clause)
-    
-    # Add the unit clause if not already present
-    if unit not in new_clauses:
-        new_clauses.append(unit)
-    
-    # Remove duplicates using a set based on formula strings
-    unique_clauses = []
-    seen = set()
-    for clause in new_clauses:
-        clause_str = clause.formula()
-        if clause_str not in seen:
-            seen.add(clause_str)
-            unique_clauses.append(clause)
-    
-    # Update the KB
-    kb.clauses = And(*unique_clauses)
+            result.append(to_cnf(clause))
+    return result
 
-
-
+def pl_resolution(kb, query, max_iterations=1000):
+    """Implement resolution refutation with improved unit propagation."""
+    clauses = flatten_and_clauses(kb.clauses.conjuncts)
+    negate_query = to_cnf(Not(query))
+    if isinstance(negate_query, And):
+        clauses.extend(flatten_and_clauses(negate_query.conjuncts))
+    else:
+        clauses.append(negate_query)
+    
+    # Collect unit clauses
+    unit_clauses = [c for c in clauses if isinstance(c, (Symbol, Not))]
+    non_unit_clauses = [c for c in clauses if isinstance(c, Or)]
+    
+    # Simplify clauses with unit propagation
+    simplified_clauses = []
+    for clause in non_unit_clauses:
+        simplified = simplify_clause(clause, unit_clauses)
+        if simplified and not is_tautology(simplified):
+            simplified_clauses.append(simplified)
+        elif simplified is False:
+            print(f"Contradiction found during simplification for query {query.formula()}")
+            return True
+    clauses = unit_clauses + simplified_clauses
+    
+    # Debug: Print initial clauses
+    # print(f"Initial clauses for query {query.formula()}: {[c.formula() for c in clauses]}")
+    
+    new = set()
+    iteration = 0
+    while iteration < max_iterations:
+        # print(f"\nIteration {iteration}: {len(clauses)} clauses")
+        n = len(clauses)
+        pairs = [(clauses[i], clauses[j]) for i in range(n) for j in range(i + 1, n)]
+        
+        for (ci, cj) in pairs:
+            resolvents = pl_resolve(ci, cj)
+            if False in resolvents:
+                print(f"Contradiction found in resolution: {ci.formula()} and {cj.formula()}")
+                return True
+            for r in resolvents:
+                if r and not is_tautology(r):
+                    simplified = simplify_clause(r, unit_clauses)
+                    if simplified is False:
+                        print(f"Contradiction found in resolvent: {r.formula()}")
+                        return True
+                    if simplified and not is_tautology(simplified):
+                        new.add(simplified)
+        
+        # Update unit clauses
+        new_units = [c for c in new if isinstance(c, (Symbol, Not))]
+        unit_clauses.extend(new_units)
+        
+        # Simplify all clauses with new units
+        new_clauses = []
+        for clause in clauses + list(new):
+            simplified = simplify_clause(clause, unit_clauses)
+            if simplified is False:
+                print(f"Contradiction found in simplification: {clause.formula()}")
+                return True
+            if simplified and not is_tautology(simplified) and simplified not in new_clauses:
+                new_clauses.append(simplified)
+        clauses = new_clauses
+        
+        # Check for subsumption
+        normalized_new = {normalize_clause(c) for c in new if c is not None}
+        normalized_clauses = {normalize_clause(c) for c in clauses if c is not None}
+        if not normalized_new or normalized_new.issubset(normalized_clauses):
+            # print("No new non-subsumed clauses, terminating.")
+            return False
+        
+        clauses.extend([c for c in new if normalize_clause(c) not in normalized_clauses])
+        new.clear()
+        iteration += 1
+    
+    print(f"Reached max iterations ({max_iterations}).")
+    return False

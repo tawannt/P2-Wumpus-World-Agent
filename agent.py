@@ -3,6 +3,7 @@ from direction import Direction
 from logic import Sentence, Symbol, Not, And, Or, Implication
 from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream
 
+
 class Agent(Thing):
     alive = True
     location = tuple()
