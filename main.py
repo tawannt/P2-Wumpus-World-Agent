@@ -3,7 +3,7 @@ from object import Stench, Breeze
 from agent import Explorer, Stench, Breeze
 from direction import Direction
 from environment import WumpusEnvironment
-from logic import Sentence, Symbol, Not, And, Or, Implication, Biconditional, model_check, forward_chaining, move_forward, shoot, grab, turn_left, turn_right, ok_to_move, to_cnf, pl_resolution
+from logic import Sentence, Symbol, Not, And, Or, Implication, Biconditional, model_check, forward_chaining, move_forward, shoot, grab, turn_left, turn_right, ok_to_move, to_cnf, pl_resolution, simplify_kb_with_unit
 from knowledgeBase import build_init_kb, KnowledgeBase
 
 # def main():
@@ -82,8 +82,8 @@ def parse_logic_expression(kb, expr_str):
 
 def main():
     random.seed(time.time())
-    N = 6
-    world = WumpusEnvironment(N=N, K_wumpuses=2, pit_probability=0.2)
+    N = 3
+    world = WumpusEnvironment(N=N, K_wumpuses=0, pit_probability=0.2)
     kb = build_init_kb(N, world)
     explorer = Explorer(kb=kb)
     world.board[1][1].append(explorer)
@@ -110,20 +110,38 @@ def main():
     while True:
         print("\n--- QUERY PHASE ---")
         try:
-            num_query = int(input("Num queries: "))
-            for i in range(num_query):
-                query_input = input("Enter a query tuple (e.g., ('Pit', 2, 1)): ")
+            # num_query = int(input("Num queries: "))
+            # for i in range(num_query):
+            #     query_input = input("Enter a query tuple (e.g., ('Pit', 2, 1)): ")
                 
-                symbol = parse_logic_expression(kb, query_input)
-                print("Checking with resolution...")
-                # result = forward_chaining(explorer.kb, symbol)
-                result = explorer.kb.ask(symbol)
-                if result:
-                    explorer.kb.clauses.add(symbol)
-                print('#')
-                print("Entailed (resolution):", result)
-                print('#')
-                print(explorer.kb.clauses.formula())
+            #     symbol = parse_logic_expression(kb, query_input)
+            #     print("Checking with resolution...")
+            #     # result = forward_chaining(explorer.kb, symbol)
+            #     result = explorer.kb.ask(symbol)
+            #     if result:
+            #         explorer.kb.clauses.add(symbol)
+            #         simplify_kb_with_unit(explorer.kb, symbol)
+            #     print('#')
+            #     print("Entailed (resolution):", result)
+            #     print('#')
+            #     print(explorer.kb.clauses.formula())
+            
+            for y in range(1, 4):
+                for x in range(1, 4):
+                    if (y, x) in explorer.kb.visited:
+                        continue
+                    print(f'y,x = {y}, {x}')
+                    query_input = Not(explorer.kb.symbols[('Pit', y, x)])
+                    print("Checking with resolution...")
+                    # result = forward_chaining(explorer.kb, symbol)
+                    result = explorer.kb.ask(query_input)
+                    if result:
+                        explorer.kb.clauses.add(query_input)
+                        simplify_kb_with_unit(explorer.kb, query_input)
+                    print('#')
+                    print("Entailed (resolution):", result)
+                    print('#')
+                    print(explorer.kb.clauses.formula())
 
                 
 

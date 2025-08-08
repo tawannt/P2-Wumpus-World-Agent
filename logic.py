@@ -574,8 +574,8 @@ def pl_resolution(kb, query):
         
         for (ci, cj) in pairs:
             resolvents = pl_resolve(ci, cj)
-            if len(resolvents) > 0:
-                print(f"Resolving {ci.formula()} and {cj.formula()} -> {[r.formula() if r is not False else 'False' for r in resolvents]}")
+            # if len(resolvents) > 0:
+                # print(f"Resolving {ci.formula()} and {cj.formula()} -> {[r.formula() if r is not False else 'False' for r in resolvents]}")
             if False in resolvents:
                 print("Contradiction found!")
                 return True
@@ -587,6 +587,7 @@ def pl_resolution(kb, query):
         
         # print(f"Normalized new: {[c.formula() if c is not False else 'False' for c in normalized_new]}")
         # print(f"Normalized clauses: {[c.formula() if c is not False else 'False' for c in normalized_clauses]}")
+        # print()
         
         if normalized_new.issubset(normalized_clauses):
             print("No new clauses, terminating.")
@@ -596,6 +597,7 @@ def pl_resolution(kb, query):
         new.clear()
         iteration += 1
 
+    
 def pl_resolve(ci, cj):
     """Return all resolvent clauses from resolving ci and cj."""
     resolvents = []
@@ -636,4 +638,85 @@ def normalize_clause(clause):
     if isinstance(clause, Symbol) or isinstance(clause, Not):
         return clause
     raise ValueError(f"Unexpected clause type: {type(clause)}")
+
+
+def is_unit(clause):
+    """Check if a clause is a unit (single literal)."""
+    return isinstance(clause, Symbol) or (isinstance(clause, Not) and isinstance(clause.operand, Symbol))
+
+# Ensure `simplify_kb_with_unit`, `is_tautology`, `to_cnf`, etc., are as provided in your original code
+
+def negation(literal):
+    """Returns the negation of a literal."""
+    if isinstance(literal, Symbol):
+        return Not(literal)
+    elif isinstance(literal, Not):
+        return literal.operand
+    else:
+        raise ValueError("Invalid literal")
+
+def get_literals(clause):
+    """Returns the list of literals in a clause."""
+    if isinstance(clause, Or):
+        return clause.disjuncts
+    elif isinstance(clause, (Symbol, Not)):
+        return [clause]
+    return []
+
+def is_tautology(clause):
+    """Checks if a clause is a tautology (e.g., A ∨ ¬A)."""
+    literals = get_literals(clause)
+    positives = {lit for lit in literals if isinstance(lit, Symbol)}
+    negatives = {lit.operand for lit in literals if isinstance(lit, Not)}
+    return bool(positives & negatives)
+
+
+def simplify_kb_with_unit(kb, unit):
+    """
+    Simplifies the KB after adding a new unit clause known to be true.
+    
+    Args:
+        kb: KnowledgeBase object
+        unit: A Symbol or Not(Symbol) that is true
+    """
+    negation_unit = negation(unit)
+    new_clauses = []
+    
+    # Process each clause in the KB
+    for clause in kb.clauses.conjuncts:
+        literals = get_literals(clause)
+        
+        # Skip clauses containing the unit (they are satisfied)
+        if unit in literals:
+            continue
+        
+        # Simplify clauses containing the negation of the unit
+        elif negation_unit in literals:
+            new_literals = [lit for lit in literals if lit != negation_unit]
+            if new_literals:
+                new_clause = Or(*new_literals) if len(new_literals) > 1 else new_literals[0]
+                if not is_tautology(new_clause):
+                    new_clauses.append(new_clause)
+                    # Note: If new_clause is a unit, we could recurse, but we'll keep it simple for now
+        else:
+            if not is_tautology(clause):
+                new_clauses.append(clause)
+    
+    # Add the unit clause if not already present
+    if unit not in new_clauses:
+        new_clauses.append(unit)
+    
+    # Remove duplicates using a set based on formula strings
+    unique_clauses = []
+    seen = set()
+    for clause in new_clauses:
+        clause_str = clause.formula()
+        if clause_str not in seen:
+            seen.add(clause_str)
+            unique_clauses.append(clause)
+    
+    # Update the KB
+    kb.clauses = And(*unique_clauses)
+
+
 

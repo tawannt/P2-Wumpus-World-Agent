@@ -214,7 +214,7 @@ class KnowledgeBase:
             consequents.add(self.symbols[('Wumpus', y, x+1)])
 
         if consequents.disjuncts:
-            self.clauses.add(Implication(self.symbols[('Stench', y, x)], consequents))
+            self.clauses.add(Or(Not(self.symbols[('Stench', y, x)]), consequents))
             self.clauses.add(Implication(consequents, self.symbols[('Stench', y, x)]))
             
         consequents = Or()
@@ -239,7 +239,7 @@ class KnowledgeBase:
             consequents.add(self.symbols[('Pit', y, x+1)])
 
         if consequents.disjuncts:
-            self.clauses.add(Implication(self.symbols[('Breeze', y, x)], consequents))
+            self.clauses.add(Or(Not(self.symbols[('Breeze', y, x)]), consequents))
             self.clauses.add(Implication(consequents, self.symbols[('Breeze', y, x)]))
 
     def add_temporal_sentence(self):
