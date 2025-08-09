@@ -729,6 +729,7 @@ class WumpusWorldAStar:
         
         # Priority 2: Explore unvisited safe areas
         safe_unvisited_targets = self.find_safe_unvisited_targets(current_pos, agent)
+        print(f'all safe unvisited:{safe_unvisited_targets}')
         if safe_unvisited_targets:
             target = safe_unvisited_targets[0]  # Closest safe unvisited, tie-broken by no-turn
             path = self.find_path_astar(current_pos, target)
