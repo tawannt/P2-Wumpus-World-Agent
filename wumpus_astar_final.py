@@ -215,18 +215,26 @@ class WumpusWorldAStar:
             return "left"
         return "unknown"
     
-    def find_safe_unvisited_targets(self, current_pos: Tuple[int, int]) -> List[Tuple[int, int]]:
-        """Find unvisited positions that are confirmed safe"""
+    def find_safe_unvisited_targets(self, current_pos: Tuple[int, int], agent: Explorer) -> List[Tuple[int, int]]:
+        """Find unvisited positions that are confirmed safe, prioritize those that don't require a turn."""
         targets = []
-        
         for y in range(1, self.height + 1):
             for x in range(1, self.width + 1):
                 pos = (y, x)
                 if pos not in self.visited_positions and self.is_position_safe(pos):
                     targets.append(pos)
-        
-        # Sort by distance from current position
-        targets.sort(key=lambda pos: self.manhattan_distance(current_pos, pos))
+
+        def needs_turn(from_pos, to_pos, current_direction):
+            move_dir = self.get_direction_action(from_pos, to_pos)
+            # Map move_dir to canonical direction string
+            dir_map = {"up": Direction.U, "down": Direction.D, "left": Direction.L, "right": Direction.R}
+            if move_dir not in dir_map:
+                return 1  # Unknown, treat as needs turn
+            return 0 if dir_map[move_dir] == current_direction else 1
+
+        # Sort by (distance, needs_turn)
+        current_direction = agent.direction.direction if hasattr(agent.direction, 'direction') else agent.direction
+        targets.sort(key=lambda pos: (self.manhattan_distance(current_pos, pos), needs_turn(current_pos, pos, current_direction)))
         return targets
     
     def find_risky_exploration_targets(self, current_pos: Tuple[int, int]) -> List[Tuple[int, int]]:
@@ -720,9 +728,9 @@ class WumpusWorldAStar:
             return complete_plan
         
         # Priority 2: Explore unvisited safe areas
-        safe_unvisited_targets = self.find_safe_unvisited_targets(current_pos)
+        safe_unvisited_targets = self.find_safe_unvisited_targets(current_pos, agent)
         if safe_unvisited_targets:
-            target = safe_unvisited_targets[0]  # Closest safe unvisited
+            target = safe_unvisited_targets[0]  # Closest safe unvisited, tie-broken by no-turn
             path = self.find_path_astar(current_pos, target)
             if path:
                 actions = self.convert_path_to_actions(agent, path)
