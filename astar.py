@@ -237,20 +237,40 @@ class WumpusWorldAStar:
         targets.sort(key=lambda pos: (self.manhattan_distance(current_pos, pos), needs_turn(current_pos, pos, current_direction)))
         return targets
     
-    def find_risky_exploration_targets(self, current_pos: Tuple[int, int]) -> List[Tuple[int, int]]:
-        """Find unvisited positions that are not confirmed unsafe (for risky exploration)"""
+    def find_risky_exploration_targets(self, current_pos: Tuple[int, int], agent=None) -> List[Tuple[int, int]]:
+        """Find unvisited positions that are not confirmed unsafe (for risky exploration), prioritize by fewest actions (shortest path, including turns)."""
         targets = []
-        
         for y in range(1, self.height + 1):
             for x in range(1, self.width + 1):
                 pos = (y, x)
                 if (pos not in self.visited_positions and 
                     pos not in self.known_unsafe and
-                    not self.is_position_safe(pos)):  # Not confirmed safe, but not confirmed unsafe
+                    not self.is_position_safe(pos)):
                     targets.append(pos)
-        
-        # Sort by distance from current position
-        targets.sort(key=lambda pos: self.manhattan_distance(current_pos, pos))
+
+        # Use agent's actual direction if provided, else default to Direction.R
+        def risky_path_length(target):
+            path = self.find_risky_path(current_pos, target)
+            if not path:
+                return float('inf')
+            actions = []
+            if agent and hasattr(agent, 'direction') and hasattr(agent.direction, 'direction'):
+                current_direction = agent.direction.direction
+            elif agent and hasattr(agent, 'direction'):
+                current_direction = agent.direction
+            else:
+                current_direction = Direction.R
+            direction_map = {"up": Direction.U, "down": Direction.D, "left": Direction.L, "right": Direction.R}
+            for move_direction in path:
+                target_direction = direction_map[move_direction]
+                turn_actions = self.calculate_turn_actions(current_direction, target_direction)
+                actions.extend(turn_actions)
+                actions.append("MoveForward")
+                current_direction = target_direction
+            return len(actions)
+
+        targets.sort(key=risky_path_length)
+        print(f"Risky targets sorted by total actions: {targets}")
         return targets
     
     def plan_wumpus_shot(self, agent: Explorer) -> List[str]:
@@ -747,7 +767,7 @@ class WumpusWorldAStar:
         #         return complete_plan
         
         # Priority 4: Try risky moves to unvisited areas (not confirmed unsafe)
-        risky_targets = self.find_risky_exploration_targets(current_pos)
+        risky_targets = self.find_risky_exploration_targets(current_pos, agent)
         if risky_targets:
             target = risky_targets[0]
             path = self.find_risky_path(current_pos, target)
