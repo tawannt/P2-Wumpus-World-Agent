@@ -2,7 +2,7 @@ from logic import Sentence, Symbol, Not, And, Or, Implication, Biconditional, mo
 from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream, MoveForward, TurnLeft, TurnRight, Grab, Shoot
 
 class KnowledgeBase:
-    def __init__(self, knowledge=None, symbols=None, visited=None, N=8, single_wumpus=False):
+    def __init__(self, knowledge=None, symbols=None, visited=None, N=8):
         self.width = N
         self.height = N
         if visited is None:
@@ -36,9 +36,6 @@ class KnowledgeBase:
         # Add temporal sentences for logical relationships
         self.add_temporal_sentence()
 
-        # Optional: Add "exactly one Wumpus" constraint
-        if single_wumpus:
-            self.add_exactly_one_wumpus()
 
     def __iadd__(self, sentence):
         if Sentence.validate(sentence) and to_cnf(sentence) not in self.clauses.conjuncts:
@@ -67,17 +64,6 @@ class KnowledgeBase:
                 if pit_consequents.disjuncts:
                     self.clauses.add(to_cnf(Biconditional(self.symbols[('Breeze', y, x)], pit_consequents)))
 
-    def add_exactly_one_wumpus(self):
-        wumpus_cells = [self.symbols[('Wumpus', y, x)] for x in range(1, self.width + 1)
-                        for y in range(1, self.height + 1) if (y, x) != (1, 1)]
-        if wumpus_cells:
-            self.clauses.add(to_cnf(Or(*wumpus_cells)))
-        for i, (y1, x1) in enumerate([(y, x) for x in range(1, self.width + 1)
-                                     for y in range(1, self.height + 1) if (y, x) != (1, 1)]):
-            for (y2, x2) in [(y, x) for x in range(1, self.width + 1)
-                             for y in range(1, self.height + 1) if (y, x) != (1, 1)][i + 1:]:
-                self.clauses.add(to_cnf(Not(And(self.symbols[('Wumpus', y1, x1)], self.symbols[('Wumpus', y2, x2)]))))
-
     def update_action_sentence(self, agent, action, step):
         actions = [
             move_forward(step),
@@ -104,21 +90,21 @@ class KnowledgeBase:
             else:
                 self.clauses.add(to_cnf(Not(self.symbols[symbol_key])))
 
-    def list_clauses_with_premise(self, p):
-        list_rules = []
-        for k in self.clauses.conjuncts:
-            if isinstance(k, Implication) and p.name in k.antecedent.symbols():
-                list_rules.append(k)
-            elif isinstance(k, Biconditional) and p.name in k.left.symbols():
-                list_rules.append(k)
-        return list_rules
+    # def list_clauses_with_premise(self, p):
+    #     list_rules = []
+    #     for k in self.clauses.conjuncts:
+    #         if isinstance(k, Implication) and p.name in k.antecedent.symbols():
+    #             list_rules.append(k)
+    #         elif isinstance(k, Biconditional) and p.name in k.left.symbols():
+    #             list_rules.append(k)
+    #     return list_rules
 
     def ask(self, query):
         return pl_resolution(self, query)
 
 
 def build_init_kb(N, environment):
-    kb = KnowledgeBase(N=N, single_wumpus=False)  # Set single_wumpus=True for exactly one Wumpus
+    kb = KnowledgeBase(N=N)  # Set single_wumpus=True for exactly one Wumpus
     percepts = environment.percept((1, 1))
     kb.update_percept_sentence((1, 1), percepts)
     return kb
