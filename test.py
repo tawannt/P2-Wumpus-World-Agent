@@ -134,30 +134,31 @@ def main_interactive():
     print("Initial Board:")
     env.print_board()
     print("\nAvailable actions: MoveForward, TurnLeft, TurnRight, Grab, Shoot, Climb")
-    
+    action = None
     while not env.is_end() and step < max_steps:
         print(f"\nStep {step + 1}: Agent at {agent.location}, Direction: {agent.direction.direction}")
-        percepts = env.percept(agent.location)
-        print(f"Percepts: {[type(p).__name__ for p in percepts]}")
-        kb.update_percept_sentence(agent.location, percepts)
-        y, x = agent.location
-        if any(isinstance(p, Glitter) for p in percepts):
-            print("Gold detected! You can use 'Grab' to pick it up.")
-        # Check adjacent cells for safety
-        adjacent = [
-            (y + 1, x) if y < N else None,  # Up
-            (y - 1, x) if y > 1 else None,  # Down
-            (y, x + 1) if x < N else None,  # Right
-            (y, x - 1) if x > 1 else None   # Left
-        ]
-        safe_adjacent = []
-        for pos in adjacent:
-            if pos and env.is_in_map(pos):
-                if (kb.ask(Not(kb.symbols[('Pit', pos[0], pos[1])]))) and \
-                kb.ask(Not(kb.symbols[('Wumpus', pos[0], pos[1])])) or \
-                pos in agent.visited:
-                    safe_adjacent.append(pos)
-        print(f"Safe adjacent cells: {safe_adjacent}")
+        if action == 'MoveForward' or action == 'Shoot' or action == None:
+            percepts = env.percept(agent.location)
+            print(f"Percepts: {[type(p).__name__ for p in percepts]}")
+            kb.update_percept_sentence(agent.location, percepts)
+            y, x = agent.location
+            if any(isinstance(p, Glitter) for p in percepts):
+                print("Gold detected! You can use 'Grab' to pick it up.")
+            # Check adjacent cells for safety
+            adjacent = [
+                (y + 1, x) if y < N else None,  # Up
+                (y - 1, x) if y > 1 else None,  # Down
+                (y, x + 1) if x < N else None,  # Right
+                (y, x - 1) if x > 1 else None   # Left
+            ]
+            safe_adjacent = []
+            for pos in adjacent:
+                if pos and env.is_in_map(pos):
+                    if (kb.ask(Not(kb.symbols[('Pit', pos[0], pos[1])]))) and \
+                    kb.ask(Not(kb.symbols[('Wumpus', pos[0], pos[1])])) or \
+                    pos in agent.visited:
+                        safe_adjacent.append(pos)
+            print(f"Safe adjacent cells: {safe_adjacent}")
         valid_actions = ['MoveForward', 'TurnLeft', 'TurnRight', 'Grab', 'Shoot', 'Climb']
         if not agent.has_arrow:
             valid_actions.remove('Shoot')

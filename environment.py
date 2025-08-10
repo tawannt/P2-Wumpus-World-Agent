@@ -123,23 +123,22 @@ class WumpusEnvironment:
         return True if y > 0 and y <= self.height and x > 0 and x <= self.width else False
 
     def update_stench(self):
-        '''Update stench after wumpus's death'''
         # Clear all Stench
-        for y in range(self.height):
-            for x in range(self.width):
+        for y in range(1, self.height + 1):
+            for x in range(1, self.width + 1):
                 self.board[y][x] = [t for t in self.board[y][x] if not isinstance(t, Stench)]
 
         # Add Stench for each Wumpus
-        for x, y in self.wumpus_pos:
-            if x > 1 and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y][x - 1]):
+        for y, x in self.wumpus_pos:  # Fixed from (x, y) to (y, x)
+            if x > 1 and not any(isinstance(e, Stench) or isinstance(e, Pit) for e in self.board[y][x - 1]) and (y, x - 1) not in self.wumpus_pos:
                 self.board[y][x - 1].append(Stench())
-            if x < self.width and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y][x + 1]):
+            if x < self.width and not any(isinstance(e, Stench) or isinstance(e, Pit) for e in self.board[y][x + 1]) and (y, x + 1) not in self.wumpus_pos:
                 self.board[y][x + 1].append(Stench())
-            if y > 1 and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y - 1][x]):
+            if y > 1 and not any(isinstance(e, Stench) or isinstance(e, Pit) for e in self.board[y - 1][x]) and (y - 1, x) not in self.wumpus_pos:
                 self.board[y - 1][x].append(Stench())
-            if y < self.height and not any(isinstance(e, Stench) or isinstance(e, Wumpus) or isinstance(e, Pit) for e in self.board[y + 1][x]):
+            if y < self.height and not any(isinstance(e, Stench) or isinstance(e, Pit) for e in self.board[y + 1][x]) and (y + 1, x) not in self.wumpus_pos:
                 self.board[y + 1][x].append(Stench())
-
+    
     
     def exe_action(self, agent, pos, action):
         y, x = pos[:2]
