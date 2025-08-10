@@ -849,6 +849,7 @@ def run_complete_wumpus_solution():
             
             # Execute action
             action_percepts = env.exe_action(agent, agent.location, action)
+            kb.update_action_sentence(agent, action, step)
             
             # Check if agent survived
             if not agent.alive:
