@@ -91,7 +91,7 @@ def main():
         print(f"Action: {action}")
         percepts = env.exe_action(agent, agent.location, action)
         kb.update_action_sentence(agent, f"{action}_{agent.location[0]}_{agent.location[1]}_{step}", step)
-        if action is 'MoveForward':
+        if action == 'MoveForward' or action == 'Shoot':
             for percept in percepts:  # Safe since exe_action returns a list
                 kb.update_percept_sentence(agent.location, [percept])
         
