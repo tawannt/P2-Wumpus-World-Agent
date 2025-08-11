@@ -2,7 +2,7 @@ import random
 from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream
 from agent import Explorer, Wumpus
 from direction import Direction
-
+import time
 
 class WumpusEnvironment:
     def __init__(self, N=8, K_wumpuses=2, pit_probability=0.2, advanced_setting = False):
@@ -147,7 +147,7 @@ class WumpusEnvironment:
         arrow_direction = Direction(agent.direction.direction)
         percepts = []
         
-        if(self.is_advanced == True and self.action_counts % 5 == 0):
+        if(self.is_advanced == True and self.action_counts > 0  and self.action_counts % 5 == 0):
             self.wumpus_move()
 
         if isinstance(agent, Explorer) and self.in_danger(agent):
@@ -243,10 +243,14 @@ class WumpusEnvironment:
         return True
 
     def wumpus_move(self):
+        random.seed(int(time.time()))
         move = ["left", "right", "up", "down"]
-        for y, x in self.wumpus_pos:
+        wumpus_position_copy = self.wumpus_pos.copy()
+        for y, x in wumpus_position_copy:
             #random in range [0, 3]
+            
             direction = random.randint(0, 3)
+            print("Random position: ", move[direction])
             if direction == 0:  # Move left
                 new_pos = (y, x - 1)
             elif direction == 1:  # Move right
@@ -261,6 +265,9 @@ class WumpusEnvironment:
                 self.board[new_pos[0]][new_pos[1]].append(Wumpus())
                 self.wumpus_pos.remove((y, x))
                 self.wumpus_pos.append(new_pos)
+                print("Wumpus moved!")
+            else:
+                print("Wumpus stayed in place!!")
         self.update_stench()  # Update stench after Wumpus moves
         
                 
