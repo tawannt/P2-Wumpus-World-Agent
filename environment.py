@@ -251,9 +251,9 @@ class WumpusEnvironment:
             elif direction == 1:  # Move right
                 new_pos = (y, x + 1)
             elif direction == 2:  # Move up
-                new_pos = (y - 1, x)
-            else:  # Move down
                 new_pos = (y + 1, x)
+            else:  # Move down
+                new_pos = (y - 1, x)
 
             if self.is_in_map(new_pos) and not any(isinstance(e, Wall) for e in self.board[new_pos[0]][new_pos[1]]) and not any(isinstance(e, Wumpus) for e in self.board[new_pos[0]][new_pos[1]]) and not any(isinstance(e, Pit) for e in self.board[new_pos[0]][new_pos[1]]):
                 self.board[y][x] = [t for t in self.board[y][x] if not isinstance(t, Wumpus)]
