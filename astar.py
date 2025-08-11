@@ -815,7 +815,7 @@ def run_complete_wumpus_solution():
     # Setup
     random.seed(time.time())  # For reproducible results
     N = 6
-    env = WumpusEnvironment(N=N, K_wumpuses=2, pit_probability=0.2)
+    env = WumpusEnvironment(N=N, K_wumpuses=2, pit_probability=0.2, advanced_setting=True)
     
     # Initialize KB and agent
     kb = build_init_kb(N, env)

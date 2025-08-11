@@ -95,7 +95,7 @@ class KnowledgeBase:
             for percept_type in [Glitter, Stench, Breeze, Bump]:
                 symbol_key = (percept_type.__name__, y, x)
                 if any(isinstance(percept, percept_type) for percept in percepts):
-                    if percept_type.__name__ == 'Stench' and f"¬{self.symbols[symbol_key].formula()}" in self.clause_formulas:
+                    if percept_type.__name__ == 'Stench' and f"¬({self.symbols[symbol_key].formula()})" in self.clause_formulas:
                         self.remove_clause(Not(self.symbols[symbol_key]))
                     self += self.symbols[symbol_key]
                 else:

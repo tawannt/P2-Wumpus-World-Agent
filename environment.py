@@ -87,6 +87,7 @@ class WumpusEnvironment:
         self.board[self.height + 1][self.width + 1].append(Wall())
 
     def print_board(self):
+        print(f'self.action_counts: {self.action_counts}')
         for y in range(self.height + 1, -1, -1):
             for x in range(self.width + 2):
                 # if y == 0 or x == 0 or y == self.height + 1 or x == self.width + 1:
