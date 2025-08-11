@@ -146,7 +146,7 @@ class WumpusEnvironment:
         y, x = pos[:2]
         arrow_direction = Direction(agent.direction.direction)
         percepts = []
-        
+        random.seed(int(time.time()))
         if(self.is_advanced == True and self.action_counts > 0  and self.action_counts % 5 == 0):
             self.wumpus_move()
 
@@ -243,7 +243,7 @@ class WumpusEnvironment:
         return True
 
     def wumpus_move(self):
-        random.seed(int(time.time()))
+        
         move = ["left", "right", "up", "down"]
         wumpus_position_copy = self.wumpus_pos.copy()
         for y, x in wumpus_position_copy:
