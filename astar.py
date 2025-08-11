@@ -290,6 +290,7 @@ class WumpusWorldAStar:
         
         # Find all valid shooting positions for these wumpus locations
         shooting_positions = self.find_shooting_positions(possible_wumpus_locations)
+        print(f"Valid shooting positions: {shooting_positions}")
         
         if not shooting_positions:
             return []
@@ -297,11 +298,20 @@ class WumpusWorldAStar:
         # Find the closest shooting position we can safely reach
         for shoot_pos, shoot_dir, target_pos in shooting_positions:
             if self.is_position_safe(shoot_pos):
-                # Plan route to shooting position
+                # If agent is already at the shooting position
+                if current_pos == shoot_pos:
+                    # Turn to face shooting direction if needed
+                    current_direction = agent.direction.direction
+                    turn_actions = self.calculate_turn_actions(current_direction, shoot_dir)
+                    actions = list(turn_actions) if turn_actions else []
+                    actions.append("Shoot")
+                    print(f"Shot plan: already at {shoot_pos}, face {shoot_dir}, shoot at {target_pos}")
+                    print(f'action plan: {actions}')
+                    return actions
+                # Otherwise, plan route to shooting position
                 path_to_shoot = self.find_path_astar(current_pos, shoot_pos)
                 if path_to_shoot:
                     actions = self.convert_path_to_actions(agent, path_to_shoot)
-                    
                     # Add turning and shooting actions
                     # Calculate final direction after movement
                     final_direction = agent.direction.direction
@@ -309,15 +319,17 @@ class WumpusWorldAStar:
                         direction_map = {"up": Direction.U, "down": Direction.D, 
                                        "left": Direction.L, "right": Direction.R}
                         final_direction = direction_map[path_to_shoot[-1]]
-                    
                     # Turn to face shooting direction
                     turn_actions = self.calculate_turn_actions(final_direction, shoot_dir)
                     actions.extend(turn_actions)
                     actions.append("Shoot")
-                    
+                    # Plan to move to the target position after shooting
+                    move_actions = self.find_path_astar(shoot_pos, target_pos)
+                    if move_actions:
+                        actions.extend(self.convert_path_to_actions(agent, move_actions))
                     print(f"Shot plan: move to {shoot_pos}, face {shoot_dir}, shoot at {target_pos}")
+                    print(f'action plan: {actions}')
                     return actions
-        
         return []
     
     def find_possible_wumpus_locations(self) -> List[Tuple[int, int]]:
@@ -345,9 +357,9 @@ class WumpusWorldAStar:
         """
         shooting_positions = []
         
+        stench_zones = set(self.find_stench_positions())
         for target_pos in wumpus_locations:
             target_y, target_x = target_pos
-            
             # Check all positions in same row (for horizontal shots)
             for x in range(1, self.width + 1):
                 if x != target_x:
@@ -356,11 +368,9 @@ class WumpusWorldAStar:
                         shoot_dir = Direction.R  # Shoot right towards target
                     else:
                         shoot_dir = Direction.L  # Shoot left towards target
-                    
-                    # Make sure shooting position is not a potential wumpus location
-                    if shoot_pos not in wumpus_locations:
+                    # Only allow shooting from a stench zone and not a wumpus location
+                    if shoot_pos in stench_zones and shoot_pos not in wumpus_locations:
                         shooting_positions.append((shoot_pos, shoot_dir, target_pos))
-            
             # Check all positions in same column (for vertical shots)
             for y in range(1, self.height + 1):
                 if y != target_y:
@@ -369,10 +379,10 @@ class WumpusWorldAStar:
                         shoot_dir = Direction.U  # Shoot up towards target
                     else:
                         shoot_dir = Direction.D  # Shoot down towards target
-                    
-                    # Make sure shooting position is not a potential wumpus location
-                    if shoot_pos not in wumpus_locations:
+                    # Only allow shooting from a stench zone and not a wumpus location
+                    if shoot_pos in stench_zones and shoot_pos not in wumpus_locations:
                         shooting_positions.append((shoot_pos, shoot_dir, target_pos))
+
         
         # Sort by distance to current position (prefer closer shooting positions)
         current_pos = list(self.visited_positions)[0] if self.visited_positions else (1, 1)
@@ -759,15 +769,15 @@ class WumpusWorldAStar:
                 print(f"Exploring safe unvisited area: {target}")
                 return complete_plan
         
-        # # Priority 3: If have arrow, plan shot at possible wumpus locations
-        # if agent.has_arrow:
-        #     shot_plan = self.plan_wumpus_shot(agent)
-        #     if shot_plan:
-        #         complete_plan.extend(shot_plan)
-        #         print("Planning wumpus shot sequence")
-        #         return complete_plan
+        # Priority 3: If have arrow, plan shot at possible wumpus locations
+        if agent.has_arrow:
+            shot_plan = self.plan_wumpus_shot(agent)
+            if shot_plan:
+                complete_plan.extend(shot_plan)
+                print("Planning wumpus shot sequence")
+                return complete_plan
         
-        # Priority 4: Try risky moves to unvisited areas (not confirmed unsafe)
+        #Priority 4: Try risky moves to unvisited areas (not confirmed unsafe)
         risky_targets = self.find_risky_exploration_targets(current_pos, agent)
         if risky_targets:
             target = risky_targets[0]

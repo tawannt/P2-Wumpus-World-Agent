@@ -88,12 +88,14 @@ if __name__ == "__main__":
 				# Place wumpus
 				for y, x in map_data['wumpus']:
 					env.board[y][x].append(__import__('agent').Wumpus())
+					env.wumpus_pos.append((y, x))
 					# Add stench to adjacent cells
 					for dy, dx in [(-1,0),(1,0),(0,-1),(0,1)]:
 						ay, ax = y+dy, x+dx
 						if 1 <= ay <= N and 1 <= ax <= N:
 							if not any(isinstance(e, __import__('object').Stench) for e in env.board[ay][ax]):
 								env.board[ay][ax].append(__import__('object').Stench())
+				print(f"Placed {len(env.wumpus_pos)} Wumpuses at {env.wumpus_pos}")
 				# Place pits
 				for y, x in map_data['pits']:
 					env.board[y][x].append(__import__('object').Pit())
