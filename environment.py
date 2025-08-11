@@ -5,7 +5,7 @@ from direction import Direction
 
 
 class WumpusEnvironment:
-    def __init__(self, N=8, K_wumpuses=2, pit_probability=0.2):
+    def __init__(self, N=8, K_wumpuses=2, pit_probability=0.2, advanced_setting = False):
         self.height = N
         self.width = N
         self.k_wumpuses = K_wumpuses
@@ -17,6 +17,7 @@ class WumpusEnvironment:
         self.gold_taken = False
         self.pit_pos = []
         self.action_counts = 0
+        self.is_advanced = advanced_setting
 
         self.add_wall()
 
@@ -140,12 +141,16 @@ class WumpusEnvironment:
                 self.board[y + 1][x].append(Stench())
     
     
-    def exe_action(self, agent, pos, action):
+    def exe_action(self, agent, pos, action): #execute action 
         y, x = pos[:2]
         arrow_direction = Direction(agent.direction.direction)
         percepts = []
+        
+        if(self.is_advanced == True and self.action_counts % 5 == 0):
+            self.wumpus_move()
+
         if isinstance(agent, Explorer) and self.in_danger(agent):
-            return percepts  # Return empty percepts if agent is killed
+            return percepts  # Return empty percepts if agent is killed 
         agent.bump = False
         if action == 'TurnRight':
             agent.direction += Direction.R
@@ -199,6 +204,7 @@ class WumpusEnvironment:
                         break
                     arrow_travel = arrow_direction.move_forward(arrow_travel)
                 agent.has_arrow = False
+        self.action_counts += 1
         return percepts
 
 
@@ -234,3 +240,26 @@ class WumpusEnvironment:
             print("Explorer climbed out {}."
                   .format("with Gold [+1000]!" if self.gold_taken else "without Gold [+0]"))
         return True
+
+    def wumpus_move(self):
+        move = ["left", "right", "up", "down"]
+        for y, x in self.wumpus_pos:
+            #random in range [0, 3]
+            direction = random.randint(0, 3)
+            if direction == 0:  # Move left
+                new_pos = (y, x - 1)
+            elif direction == 1:  # Move right
+                new_pos = (y, x + 1)
+            elif direction == 2:  # Move up
+                new_pos = (y - 1, x)
+            else:  # Move down
+                new_pos = (y + 1, x)
+
+            if self.is_in_map(new_pos) and not any(isinstance(e, Wall) for e in self.board[new_pos[0]][new_pos[1]]) and not any(isinstance(e, Wumpus) for e in self.board[new_pos[0]][new_pos[1]]) and not any(isinstance(e, Pit) for e in self.board[new_pos[0]][new_pos[1]]):
+                self.board[y][x] = [t for t in self.board[y][x] if not isinstance(t, Wumpus)]
+                self.board[new_pos[0]][new_pos[1]].append(Wumpus())
+                self.wumpus_pos.remove((y, x))
+                self.wumpus_pos.append(new_pos)
+        self.update_stench()  # Update stench after Wumpus moves
+        
+                
