@@ -265,6 +265,7 @@ class WumpusEnvironment:
             if self.is_in_map(new_pos) and not any(isinstance(e, Wall) for e in self.board[new_pos[0]][new_pos[1]]) and not any(isinstance(e, Wumpus) for e in self.board[new_pos[0]][new_pos[1]]) and not any(isinstance(e, Pit) for e in self.board[new_pos[0]][new_pos[1]]):
                 self.board[y][x] = [t for t in self.board[y][x] if not isinstance(t, Wumpus)]
                 self.board[new_pos[0]][new_pos[1]].append(Wumpus())
+                print(f'new Pos: {new_pos}')
                 self.wumpus_pos.remove((y, x))
                 self.wumpus_pos.append(new_pos)
                 print("Wumpus moved!")
