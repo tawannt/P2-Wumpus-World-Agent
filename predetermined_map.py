@@ -55,7 +55,7 @@ if __name__ == "__main__":
 	from agent import Explorer
 	from astar import WumpusWorldAStar
 	from object import Gold, Glitter
-
+	advance_setting = None
 	while True:
 		print("\nChoose a predetermined map to preview and solve:")
 		for i, m in enumerate(PREDETERMINED_MAPS):
@@ -70,9 +70,21 @@ if __name__ == "__main__":
 			print("Invalid input. Please enter a number 1-5.")
 		map_data = PREDETERMINED_MAPS[choice-1]
 		print_map_preview(map_data)
-
+		while True:
+			try:
+				advance_setting = input("Advanced Setting? (True/False): ")
+				if advance_setting == 'True' or advance_setting == 'False':
+					break
+			except Exception:
+				pass
+			print("Invalid input. Please enter a number True/False.")
+		flag = False
 		# Ask user to run or go back
 		while True:
+			if advance_setting:
+				if advance_setting == 'True':
+					flag = True
+				else: flag = False
 			print("\nOptions:")
 			print("  1. Run this map")
 			print("  2. Back to map selection")
@@ -80,7 +92,7 @@ if __name__ == "__main__":
 			if opt == '1':
 				# Build environment from map_data
 				N = 6
-				env = WumpusEnvironment(N=N, K_wumpuses=0, pit_probability=0.0)
+				env = WumpusEnvironment(N=N, K_wumpuses=0, pit_probability=0.0, advanced_setting=flag)
 				# Clear board and set up manually
 				for y in range(1, N+1):
 					for x in range(1, N+1):

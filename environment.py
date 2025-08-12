@@ -169,6 +169,8 @@ class WumpusEnvironment:
             else:
                 percepts.append(Bump())
             agent.performance -= 1
+            if self.in_danger(agent):
+                return
         elif action == 'Grab':
             grabbing = False
             for thing in self.board[y][x]:
