@@ -97,11 +97,13 @@ class KnowledgeBase:
                 if any(isinstance(percept, percept_type) for percept in percepts):
                     if percept_type.__name__ == 'Stench' and f"¬({self.symbols[symbol_key].formula()})" in self.clause_formulas:
                         self.remove_clause(Not(self.symbols[symbol_key]))
+                        self.clause_formulas.remove( f"¬({self.symbols[symbol_key].formula()})")
                     self += self.symbols[symbol_key]
                 else:
                     if percept_type.__name__ not in ['Bump', 'Glitter']:
                         if f"{self.symbols[symbol_key].formula()}" in self.clause_formulas:
                             self.remove_clause(self.symbols[symbol_key])
+                            self.clause_formulas.remove(f"{self.symbols[symbol_key].formula()}")
                         self += Not(self.symbols[symbol_key])
 
     def remove_clause(self, sentence):
