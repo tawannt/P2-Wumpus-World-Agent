@@ -57,6 +57,7 @@ if __name__ == "__main__":
 	from agent import Explorer
 	from astar import WumpusWorldAStar
 	from object import Gold, Glitter, Logger
+	from astar_advanced import WumpusWorldAStarAdvanced
 import os
     
 advance_setting = None
@@ -134,7 +135,7 @@ while True:
 				env.board[1][1].append(agent)
 
 				# Create planner
-				planner = WumpusWorldAStar(env, kb)
+				planner = WumpusWorldAStarAdvanced(env, kb)
 
 				file_name = "map" + str(choice) 
 				if (advance_setting == 'True'):
@@ -156,6 +157,7 @@ while True:
 				while not env.is_end() and step < max_steps:
 					print(f"\n--- STEP {step + 1} ---")
 					print(f"Agent at {agent.location}, facing {agent.direction.direction}")
+					print(f"Knowledge Base {kb.get_clause_formulas()}")
 					print(f"Performance: {agent.performance}")
 					percepts = env.percept(agent.location)
 					planner.update_world_knowledge(agent.location, percepts)

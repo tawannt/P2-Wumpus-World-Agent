@@ -136,6 +136,16 @@ class KnowledgeBase:
 
     def ask(self, query):
         return pl_resolution(self, query)
+    
+    def get_clause_formulas(self):
+        return list(self.clause_formulas)
+    def set_new_clause_formalas(self, new_clause):
+        """
+        update knowledge base
+        """
+        self.clause_formulas = new_clause
+        
+    
 
 
 def build_init_kb(N, environment, is_advanced=False):

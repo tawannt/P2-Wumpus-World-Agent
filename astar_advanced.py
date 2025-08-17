@@ -55,6 +55,7 @@ class WumpusWorldAStarAdvanced:
         self.known_unsafe = set()
         self.percept_history = {}
         self.visited_positions = {(1, 1)}
+        self.current_stench_positions = set()  # Track positions with stench
         
     def manhattan_distance(self, pos1: Tuple[int, int], pos2: Tuple[int, int]) -> int:
         """Calculate Manhattan distance heuristic"""
@@ -75,9 +76,35 @@ class WumpusWorldAStarAdvanced:
     def update_world_knowledge(self, position: Tuple[int, int], percepts: List):
         """Update world knowledge based on percepts"""
         self.percept_history[position] = percepts
+        
+        for percept in percepts:
+            if isinstance(percept, Stench):
+                self.current_stench_positions.add(position)
+
         self.visited_positions.add(position)
         self.known_safe.add(position)
         
+        
+        if self.env.action_counts % 5 > 1 and self.env.action_counts % 5 == 0 and self.env.is_advanced == True: #TODO: handle this
+            for pos, percept in self.percept_history.items():
+                l = []
+                for p in percept:
+                    if isinstance(p, Stench): 
+                        continue 
+                    else:
+                        l.append(p)
+                self.percept_history[pos] = l
+            for pos in self.current_stench_positions:
+                #remove kb
+                self.kb.remove_clause(self.kb.symbols[('Stench', pos[0], pos[1])])
+                self.kb.remove_clause(Not(self.kb.symbols[('Wumpus', pos[0], pos[1])]))
+            
+            print("update world Updated")
+
+            self.current_stench_positions.clear()
+            
+            
+            
         # Update knowledge base if available
         if self.kb:
             try:
@@ -111,12 +138,18 @@ class WumpusWorldAStarAdvanced:
         3. Conservative heuristics - only safe if adjacent to visited area with NO danger signals
         """
         # Already visited/known safe
-        if position in self.visited_positions or position in self.known_safe:
+
+        if (self.env.action_counts % 5 <= 1 and self.env.is_advanced == True) and (position in self.current_stench_positions):
+            return False
+        
+        if position in self.known_unsafe:
+            return False
+        
+        if (position in self.visited_positions) or position in self.known_safe:
             return True
         
         # Known unsafe
-        if position in self.known_unsafe:
-            return False
+        
         
         # Try logical inference first
         if self.kb:
@@ -133,7 +166,7 @@ class WumpusWorldAStarAdvanced:
                     if no_pit and no_wumpus:
                         self.known_safe.add(position)
                         return True
-                    elif no_pit is False or no_wumpus is False:
+                    elif no_pit is False:
                         # Definitely unsafe
                         self.known_unsafe.add(position)
                         return False
