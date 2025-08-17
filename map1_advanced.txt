@@ -76,7 +76,7 @@ Exporer is alive.
 
 --- STEP 4 ---
 Agent at (1, 4), facing right
-Knowledge Base ['¬(Pit_1_3)', '¬(Wumpus_1_2)', '¬(Wumpus_1_3)', '¬(Pit_1_2)']
+Knowledge Base ['¬(Wumpus_1_2)', '¬(Pit_1_2)', '¬(Wumpus_1_3)', '¬(Pit_1_3)']
 Performance: -3
 Percepts: []
 Starting solve from (1, 4), has_gold=False
@@ -97,7 +97,7 @@ Exporer is alive.
 
 --- STEP 5 ---
 Agent at (1, 5), facing right
-Knowledge Base ['¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_4)', '¬(Pit_1_2)', '¬(Wumpus_1_3)']
+Knowledge Base ['¬(Wumpus_1_2)', '¬(Wumpus_1_3)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Pit_1_2)', '¬(Wumpus_1_4)']
 Performance: -4
 Percepts: []
 Starting solve from (1, 5), has_gold=False
@@ -118,7 +118,7 @@ Exporer is alive.
 
 --- STEP 6 ---
 Agent at (1, 6), facing right
-Knowledge Base ['¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_1_5)', '¬(Wumpus_1_2)', '¬(Wumpus_1_4)', '¬(Pit_1_2)', '¬(Wumpus_1_3)']
+Knowledge Base ['¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_1_3)', '¬(Pit_1_5)', '¬(Pit_1_4)', '¬(Pit_1_2)', '¬(Wumpus_1_4)']
 Performance: -5
 Percepts: []
 Starting solve from (1, 6), has_gold=False
@@ -139,7 +139,7 @@ Exporer is alive.
 
 --- STEP 7 ---
 Agent at (1, 6), facing up
-Knowledge Base ['¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Wumpus_1_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_4)', '¬(Pit_1_2)', '¬(Wumpus_1_3)']
+Knowledge Base ['¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Wumpus_1_3)', '¬(Pit_1_3)', '¬(Pit_1_5)', '¬(Pit_1_4)', '¬(Wumpus_1_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)']
 Performance: -6
 Percepts: []
 Starting solve from (1, 6), has_gold=False
@@ -160,7 +160,7 @@ Exporer is alive.
 
 --- STEP 8 ---
 Agent at (2, 6), facing up
-Knowledge Base ['¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Wumpus_1_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_4)', '¬(Pit_1_2)', '¬(Wumpus_1_3)']
+Knowledge Base ['¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Wumpus_1_3)', '¬(Pit_1_3)', '¬(Pit_1_5)', '¬(Pit_1_4)', '¬(Wumpus_1_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)']
 Performance: -7
 Percepts: []
 Starting solve from (2, 6), has_gold=False
@@ -181,7 +181,7 @@ Exporer is alive.
 
 --- STEP 9 ---
 Agent at (3, 6), facing up
-Knowledge Base ['¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_2_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Wumpus_1_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_4)', '¬(Pit_1_2)', '¬(Wumpus_1_3)', '¬(Pit_2_6)']
+Knowledge Base ['¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_2_6)', '¬(Wumpus_1_3)', '¬(Pit_1_3)', '¬(Pit_1_5)', '¬(Wumpus_2_6)', '¬(Pit_1_4)', '¬(Wumpus_1_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)']
 Performance: -8
 Percepts: []
 Starting solve from (3, 6), has_gold=False
@@ -202,7 +202,7 @@ Exporer is alive.
 
 --- STEP 10 ---
 Agent at (4, 6), facing up
-Knowledge Base ['¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_2_6)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_3_6)', '¬(Wumpus_1_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_4)', '¬(Pit_1_2)', '¬(Wumpus_1_3)', '¬(Pit_2_6)']
+Knowledge Base ['¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_2_6)', '¬(Wumpus_1_3)', '¬(Pit_1_3)', '¬(Pit_1_5)', '¬(Wumpus_2_6)', '¬(Pit_3_6)', '¬(Pit_1_4)', '¬(Wumpus_1_6)', '¬(Wumpus_3_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)']
 Performance: -9
 Percepts: []
 Starting solve from (4, 6), has_gold=False
@@ -223,7 +223,7 @@ Exporer is alive.
 
 --- STEP 11 ---
 Agent at (5, 6), facing up
-Knowledge Base ['¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_2_6)', '¬(Pit_4_6)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_3_6)', '¬(Wumpus_1_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_4)', '¬(Wumpus_4_6)', '¬(Pit_1_2)', '¬(Wumpus_1_3)', '¬(Pit_2_6)']
+Knowledge Base ['¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_2_6)', '¬(Wumpus_1_3)', '¬(Pit_1_3)', '¬(Pit_1_5)', '¬(Wumpus_2_6)', '¬(Pit_3_6)', '¬(Wumpus_4_6)', '¬(Pit_1_4)', '¬(Wumpus_1_6)', '¬(Wumpus_3_6)', '¬(Pit_4_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)']
 Performance: -10
 Percepts: []
 Starting solve from (5, 6), has_gold=False
@@ -244,7 +244,7 @@ Exporer is alive.
 
 --- STEP 12 ---
 Agent at (6, 6), facing up
-Knowledge Base ['¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_2_6)', '¬(Pit_4_6)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_4)', '¬(Wumpus_4_6)', '¬(Pit_1_2)', '¬(Wumpus_1_3)', '¬(Pit_2_6)']
+Knowledge Base ['¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_2_6)', '¬(Wumpus_1_3)', '¬(Pit_1_3)', '¬(Pit_1_5)', '¬(Wumpus_2_6)', '¬(Pit_3_6)', '¬(Wumpus_4_6)', '¬(Pit_5_6)', '¬(Pit_1_4)', '¬(Wumpus_1_6)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Pit_4_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)']
 Performance: -11
 Percepts: ['Glitter']
 🏆 GOLD DETECTED! Grabbing...
@@ -267,7 +267,7 @@ Exporer is alive.
 
 --- STEP 13 ---
 Agent at (6, 6), facing left
-Knowledge Base ['¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_1_6)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Pit_1_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', 'Glitter_6_6', '¬(Pit_1_5)', '¬(Pit_4_6)']
 Performance: -2
 Percepts: ['Glitter']
 🏆 GOLD DETECTED! Grabbing...
@@ -290,7 +290,7 @@ Exporer is alive.
 
 --- STEP 14 ---
 Agent at (6, 5), facing left
-Knowledge Base ['¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_1_6)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Pit_1_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', 'Glitter_6_6', '¬(Pit_1_5)', '¬(Pit_4_6)']
 Performance: -3
 Percepts: []
 Starting solve from (6, 5), has_gold=True
@@ -310,7 +310,7 @@ Exporer is alive.
 
 --- STEP 15 ---
 Agent at (6, 5), facing down
-Knowledge Base ['¬(Pit_6_5)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_1_6)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Pit_1_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', 'Glitter_6_6', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_4_6)']
 Performance: -4
 Percepts: []
 Starting solve from (6, 5), has_gold=True
@@ -330,7 +330,7 @@ Exporer is alive.
 
 --- STEP 16 ---
 Agent at (5, 5), facing down
-Knowledge Base ['¬(Pit_6_5)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_1_6)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Pit_1_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', 'Glitter_6_6', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_4_6)']
 Performance: -5
 Percepts: []
 Starting solve from (5, 5), has_gold=True
@@ -350,7 +350,7 @@ Exporer is alive.
 
 --- STEP 17 ---
 Agent at (4, 5), facing down
-Knowledge Base ['¬(Pit_6_5)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_1_6)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Pit_1_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_5_5)', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_4_6)']
 Performance: -6
 Percepts: []
 Starting solve from (4, 5), has_gold=True
@@ -370,7 +370,7 @@ Exporer is alive.
 
 --- STEP 18 ---
 Agent at (3, 5), facing down
-Knowledge Base ['¬(Pit_6_5)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Pit_4_5)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Wumpus_1_3)', '¬(Wumpus_4_5)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_1_6)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Wumpus_4_5)', '¬(Pit_1_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_4_5)', '¬(Pit_5_5)', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_4_6)']
 Performance: -7
 Percepts: []
 Starting solve from (3, 5), has_gold=True
@@ -390,7 +390,7 @@ Exporer is alive.
 
 --- STEP 19 ---
 Agent at (3, 5), facing left
-Knowledge Base ['¬(Pit_6_5)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Pit_4_5)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Pit_3_5)', '¬(Wumpus_3_5)', '¬(Wumpus_1_3)', '¬(Wumpus_4_5)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_3_5)', '¬(Wumpus_1_6)', '¬(Pit_3_5)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Wumpus_4_5)', '¬(Pit_1_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_4_5)', '¬(Pit_5_5)', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_4_6)']
 Performance: -8
 Percepts: []
 Starting solve from (3, 5), has_gold=True
@@ -410,7 +410,7 @@ Exporer is alive.
 
 --- STEP 20 ---
 Agent at (3, 4), facing left
-Knowledge Base ['¬(Pit_6_5)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Pit_4_5)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Pit_3_5)', '¬(Wumpus_3_5)', '¬(Wumpus_1_3)', '¬(Wumpus_4_5)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_3_5)', '¬(Wumpus_1_6)', '¬(Pit_3_5)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Wumpus_4_5)', '¬(Pit_1_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_4_5)', '¬(Pit_5_5)', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_4_6)']
 Performance: -9
 Percepts: []
 Starting solve from (3, 4), has_gold=True
@@ -430,7 +430,7 @@ Exporer is alive.
 
 --- STEP 21 ---
 Agent at (3, 3), facing left
-Knowledge Base ['¬(Pit_6_5)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_3_4)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Pit_4_5)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Pit_3_5)', '¬(Wumpus_3_5)', '¬(Wumpus_1_3)', '¬(Wumpus_4_5)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_3_5)', '¬(Wumpus_1_6)', '¬(Pit_3_5)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Wumpus_4_5)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_4_5)', '¬(Pit_5_5)', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_4_6)', '¬(Wumpus_3_4)']
 Performance: -10
 Percepts: []
 Starting solve from (3, 3), has_gold=True
@@ -450,7 +450,7 @@ Exporer is alive.
 
 --- STEP 22 ---
 Agent at (3, 2), facing left
-Knowledge Base ['¬(Pit_6_5)', '¬(Wumpus_1_4)', '¬(Wumpus_3_3)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_3_4)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Pit_4_5)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Pit_3_5)', '¬(Wumpus_3_5)', '¬(Wumpus_1_3)', '¬(Wumpus_4_5)', '¬(Pit_3_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Pit_3_3)', '¬(Wumpus_4_6)', '¬(Wumpus_3_5)', '¬(Wumpus_1_6)', '¬(Pit_3_5)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_3_3)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Wumpus_4_5)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_4_5)', '¬(Pit_5_5)', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_4_6)', '¬(Wumpus_3_4)']
 Performance: -11
 Percepts: []
 Starting solve from (3, 2), has_gold=True
@@ -470,7 +470,7 @@ Exporer is alive.
 
 --- STEP 23 ---
 Agent at (3, 1), facing left
-Knowledge Base ['¬(Pit_6_5)', '¬(Wumpus_1_4)', '¬(Wumpus_3_3)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_3_4)', '¬(Pit_3_2)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Pit_4_5)', '¬(Wumpus_3_2)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Pit_3_5)', '¬(Wumpus_3_5)', '¬(Wumpus_1_3)', '¬(Wumpus_4_5)', '¬(Pit_3_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Pit_3_3)', '¬(Wumpus_3_2)', '¬(Wumpus_4_6)', '¬(Wumpus_3_5)', '¬(Wumpus_1_6)', '¬(Pit_3_5)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_3_3)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Wumpus_4_5)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_4_5)', '¬(Pit_5_5)', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_3_2)', '¬(Pit_4_6)', '¬(Wumpus_3_4)']
 Performance: -12
 Percepts: []
 Starting solve from (3, 1), has_gold=True
@@ -490,7 +490,7 @@ Exporer is alive.
 
 --- STEP 24 ---
 Agent at (3, 1), facing down
-Knowledge Base ['¬(Pit_6_5)', '¬(Pit_3_1)', '¬(Wumpus_1_4)', '¬(Wumpus_3_3)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_3_4)', '¬(Pit_3_2)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_3_1)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Pit_4_5)', '¬(Wumpus_3_2)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Pit_3_5)', '¬(Wumpus_3_5)', '¬(Wumpus_1_3)', '¬(Wumpus_4_5)', '¬(Pit_3_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Pit_3_3)', '¬(Wumpus_3_2)', '¬(Wumpus_4_6)', '¬(Wumpus_3_5)', '¬(Wumpus_1_6)', '¬(Pit_3_5)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_3_1)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_3_3)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Wumpus_4_5)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_4_5)', '¬(Pit_5_5)', '¬(Pit_3_1)', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_3_2)', '¬(Pit_4_6)', '¬(Wumpus_3_4)']
 Performance: -13
 Percepts: []
 Starting solve from (3, 1), has_gold=True
@@ -510,7 +510,7 @@ Exporer is alive.
 
 --- STEP 25 ---
 Agent at (2, 1), facing down
-Knowledge Base ['¬(Pit_6_5)', '¬(Pit_3_1)', '¬(Wumpus_1_4)', '¬(Wumpus_3_3)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_3_4)', '¬(Pit_3_2)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_3_1)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Pit_4_5)', '¬(Wumpus_3_2)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_1_2)', '¬(Pit_3_5)', '¬(Wumpus_3_5)', '¬(Wumpus_1_3)', '¬(Wumpus_4_5)', '¬(Pit_3_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Pit_3_3)', '¬(Wumpus_3_2)', '¬(Wumpus_4_6)', '¬(Wumpus_3_5)', '¬(Wumpus_1_6)', '¬(Pit_3_5)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_3_1)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_3_3)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Wumpus_4_5)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_4_5)', '¬(Pit_5_5)', '¬(Pit_3_1)', '¬(Pit_1_5)', '¬(Wumpus_6_5)', '¬(Pit_3_2)', '¬(Pit_4_6)', '¬(Wumpus_3_4)']
 Performance: -14
 Percepts: []
 Starting solve from (2, 1), has_gold=True
@@ -530,7 +530,7 @@ Exporer is alive.
 
 --- STEP 26 ---
 Agent at (1, 1), facing down
-Knowledge Base ['¬(Pit_6_5)', '¬(Pit_2_1)', '¬(Pit_3_1)', '¬(Wumpus_1_4)', '¬(Wumpus_3_3)', '¬(Pit_2_6)', '¬(Wumpus_5_5)', '¬(Wumpus_3_4)', '¬(Pit_3_2)', '¬(Wumpus_6_5)', '¬(Pit_5_6)', '¬(Pit_3_6)', '¬(Wumpus_6_6)', '¬(Wumpus_4_6)', '¬(Wumpus_3_1)', '¬(Wumpus_2_6)', '¬(Pit_5_5)', '¬(Pit_4_5)', '¬(Wumpus_3_2)', '¬(Wumpus_1_6)', '¬(Wumpus_5_6)', '¬(Wumpus_2_1)', '¬(Wumpus_1_2)', '¬(Pit_3_5)', '¬(Wumpus_3_5)', '¬(Wumpus_1_3)', '¬(Wumpus_4_5)', '¬(Pit_3_3)', '¬(Pit_1_5)', '¬(Pit_1_3)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_3_6)', '¬(Wumpus_1_5)', '¬(Pit_1_6)', '¬(Pit_6_6)', '¬(Pit_1_2)', '¬(Pit_4_6)', 'Glitter_6_6']
+Knowledge Base ['¬(Pit_1_6)', '¬(Wumpus_6_6)', '¬(Pit_3_3)', '¬(Wumpus_3_2)', '¬(Wumpus_4_6)', '¬(Wumpus_3_5)', '¬(Wumpus_1_6)', '¬(Pit_3_5)', '¬(Wumpus_3_6)', '¬(Wumpus_5_6)', '¬(Wumpus_3_1)', '¬(Wumpus_2_6)', '¬(Pit_1_2)', '¬(Wumpus_3_3)', '¬(Wumpus_1_4)', '¬(Pit_2_6)', '¬(Pit_1_3)', '¬(Pit_6_6)', '¬(Pit_3_6)', '¬(Pit_5_6)', '¬(Wumpus_4_5)', '¬(Pit_1_4)', '¬(Pit_3_4)', '¬(Wumpus_1_2)', '¬(Wumpus_1_5)', '¬(Wumpus_1_3)', '¬(Pit_6_5)', '¬(Wumpus_5_5)', 'Glitter_6_6', '¬(Pit_4_5)', '¬(Pit_5_5)', '¬(Pit_3_1)', '¬(Pit_1_5)', '¬(Wumpus_2_1)', '¬(Pit_2_1)', '¬(Wumpus_6_5)', '¬(Pit_3_2)', '¬(Pit_4_6)', '¬(Wumpus_3_4)']
 Performance: -15
 Percepts: []
 Starting solve from (1, 1), has_gold=True

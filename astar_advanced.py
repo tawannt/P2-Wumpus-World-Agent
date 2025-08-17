@@ -53,6 +53,7 @@ class WumpusWorldAStarAdvanced:
         # Safety tracking
         self.known_safe = {(1, 1)}  # Start is always safe
         self.known_unsafe = set()
+        self.known_wumpus = set()
         self.percept_history = {}
         self.visited_positions = {(1, 1)}
         self.current_stench_positions = set()  # Track positions with stench
@@ -86,6 +87,8 @@ class WumpusWorldAStarAdvanced:
         
         
         if self.env.action_counts % 5 > 1 and self.env.action_counts % 5 == 0 and self.env.is_advanced == True: #TODO: handle this
+            self.known_wumpus.clear()
+            
             for pos, percept in self.percept_history.items():
                 l = []
                 for p in percept:
@@ -142,11 +145,11 @@ class WumpusWorldAStarAdvanced:
         if (self.env.action_counts % 5 <= 1 and self.env.is_advanced == True) and (position in self.current_stench_positions):
             return False
         
-        if position in self.known_unsafe:
+        if position in self.known_unsafe or position in self.known_wumpus:
             return False
         
-        if (position in self.visited_positions) or position in self.known_safe:
-            return True
+        # if (position in self.visited_positions) or position in self.known_safe:
+        #     return True
         
         # Known unsafe
         
@@ -170,6 +173,8 @@ class WumpusWorldAStarAdvanced:
                         # Definitely unsafe
                         self.known_unsafe.add(position)
                         return False
+                    elif no_wumpus is False:
+                        self.known_wumpus.add(position)
             except Exception as e:
                 print(f"KB inference error for {position}: {e}")
         
