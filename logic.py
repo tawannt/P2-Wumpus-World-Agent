@@ -206,25 +206,25 @@ class Biconditional(Sentence):
     def symbols(self):
         return set.union(self.left.symbols(), self.right.symbols())
 
-def move_forward(step):
-    return Symbol(f'MoveForward_{step}')
+# def move_forward(step):
+#     return Symbol(f'MoveForward_{step}')
 
 def shoot(from_location, direction, step):
     y, x = from_location[:2]
     return Symbol(f'ShootFrom_{y}_{x}_{direction}_{step}')
 
-def grab(from_location, step):
-    y, x = from_location[:2]
-    return Symbol(f'Grab_{y}_{x}_{step}')
+# def grab(from_location, step):
+#     y, x = from_location[:2]
+#     return Symbol(f'Grab_{y}_{x}_{step}')
 
-def turn_left(step):
-    return Symbol(f'TurnLeft_{step}')
+# def turn_left(step):
+#     return Symbol(f'TurnLeft_{step}')
 
-def turn_right(step):
-    return Symbol(f'TurnRight_{step}')
+# def turn_right(step):
+#     return Symbol(f'TurnRight_{step}')
 
-def ok_to_move(x, y):
-    return Symbol(f'OK_{y}_{x}')
+# def ok_to_move(x, y):
+#     return Symbol(f'OK_{y}_{x}')
 
 def flatten_or(sent):
     if isinstance(sent, Or):
@@ -312,40 +312,6 @@ def negation(literal):
     else:
         raise ValueError("Invalid literal")
 
-# def get_literals(clause):
-#     if isinstance(clause, Or):
-#         return clause.disjuncts
-#     elif isinstance(clause, (Symbol, Not)):
-#         return [clause]
-#     return []
-
-
-# def simplify_kb_with_unit(kb, unit):
-#     negation_unit = negation(unit)
-#     new_clauses = []
-#     for clause in kb.clauses.conjuncts:
-#         literals = get_literals(clause)
-#         if unit in literals:
-#             continue
-#         elif negation_unit in literals:
-#             new_literals = [lit for lit in literals if lit != negation_unit]
-#             if new_literals:
-#                 new_clause = Or(*new_literals) if len(new_literals) > 1 else new_literals[0]
-#                 if not is_tautology(new_clause):
-#                     new_clauses.append(new_clause)
-#         else:
-#             if not is_tautology(clause):
-#                 new_clauses.append(clause)
-#     if unit not in new_clauses:
-#         new_clauses.append(unit)
-#     unique_clauses = []
-#     seen = set()
-    # for clause in new_clauses:
-    #     clause_str = clause.formula()
-    #     if clause_str not in seen:
-    #         seen.add(clause_str)
-    #         unique_clauses.append(clause)
-    # kb.clauses = And(*unique_clauses)
 
 def normalize_clause(clause):
     if clause is False:

@@ -167,6 +167,7 @@ while True:
 						env.exe_action(agent, agent.location, 'Grab')
 						gold_status = any(isinstance(item, Gold) for item in agent.holding)
 						print(f"Gold acquired: {gold_status}")
+						
 					action = planner.get_next_action(agent)
 					if action:
 						print(f"🎯 Planned action: {action}")
@@ -176,6 +177,7 @@ while True:
 							break
 						if action_percepts:
 							for percept in action_percepts:
+								agent.kb.update_action_sentence(agent, action, step)
 								print(f"Action result: {type(percept).__name__}")
 					else:
 						print("❌ No valid action available!")

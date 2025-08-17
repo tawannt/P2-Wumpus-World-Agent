@@ -1,4 +1,4 @@
-from logic import Sentence, Symbol, Not, And, Or, Implication, Biconditional, move_forward, shoot, grab, turn_left, turn_right, ok_to_move, to_cnf, pl_resolution, flatten_and_clauses, normalize_clause
+from logic import Sentence, Symbol, Not, And, Or, Implication, Biconditional, shoot, to_cnf, pl_resolution, flatten_and_clauses, normalize_clause
 from object import Thing, Gold, Wall, Pit, Arrow, Stench, Breeze, Glitter, Bump, Scream, MoveForward, TurnLeft, TurnRight, Grab, Shoot
 import logging
 
@@ -60,22 +60,11 @@ class KnowledgeBase:
                     self.clauses.add(to_cnf(Biconditional(self.symbols[('Breeze', y, x)], pit_consequents)))
 
     def update_action_sentence(self, agent, action, step):
-            
-
-        # actions = [
-        #     move_forward(step),
-        #     turn_left(step),
-        #     turn_right(step),
-        # ]
+        
         if action == 'Shoot':
-            self.symbols[('Shoot', agent.location[0], agent.location[1], agent.direction.direction, step)] = shoot(agent.location, agent.direction.direction, step)
-            self.clauses.add(to_cnf(self.symbols[('Shoot', agent.location[0], agent.location[1], agent.direction.direction, step)]))
+            # self.symbols[('Shoot', agent.location[0], agent.location[1], agent.direction.direction, step)] = shoot(agent.location, agent.direction.direction, step)
+            # self += self.symbols[('Shoot', agent.location[0], agent.location[1], agent.direction.direction, step)]
             self.last_shot = (agent.location, agent.direction, step)
-        # for a in actions:
-        #     self.symbols[(a, )] = a
-        #     if action == a:
-        #         self.clauses.add(to_cnf(self.symbols[a.name]))
-
         self.action_count += 1
 
         # Thực hiện xong sẽ biết là đã 5 action đã qua.

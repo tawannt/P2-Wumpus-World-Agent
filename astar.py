@@ -51,12 +51,10 @@ class WumpusWorldAStar:
         self.height = environment.height
         
         # Safety tracking
-        self.is_advanced = self.env.is_advanced
-        self.action_counts = self.env.action_counts
         self.known_safe = {(1, 1)}  # Start is always safe
         self.known_unsafe = set()
         self.percept_history = {}
-        self.visited_positions = self.kb.visited.copy() if self.kb else {(1, 1)}
+        self.visited_positions = {(1, 1)}
         
     def manhattan_distance(self, pos1: Tuple[int, int], pos2: Tuple[int, int]) -> int:
         """Calculate Manhattan distance heuristic"""
@@ -112,11 +110,11 @@ class WumpusWorldAStar:
         3. Conservative heuristics - only safe if adjacent to visited area with NO danger signals
         """
 
-        if self.is_advanced and self.action_counts > 0 and self.action_counts % 5 == 0:
-            # In advanced mode, reset safety assumptions due to Wumpus movement
-            self.known_safe = {(y, x) for (y, x) in self.visited_positions}
-            self.known_unsafe = set()
-            print(f"Advanced mode: Reset safety due to potential Wumpus movement")
+        # if self.is_advanced and self.action_counts > 0 and self.action_counts % 5 == 0:
+        #     # In advanced mode, reset safety assumptions due to Wumpus movement
+        #     self.known_safe = {(y, x) for (y, x) in self.visited_positions}
+        #     self.known_unsafe = set()
+        #     print(f"Advanced mode: Reset safety due to potential Wumpus movement")
 
 
         # Already visited/known safe
@@ -137,14 +135,18 @@ class WumpusWorldAStar:
                 
                 # Try to ask if position is safe (no pit and no wumpus)
                 if pit_symbol in self.kb.symbols and wumpus_symbol in self.kb.symbols:
+                    if y == 1 and x == 2:
+                        print('hello3')
                     no_pit = self.kb.ask(Not(self.kb.symbols[pit_symbol]))
                     no_wumpus = self.kb.ask(Not(self.kb.symbols[wumpus_symbol]))
+                    print(f'no_pit: {no_pit}')
+                    print(f'no_wumpus: {no_wumpus}')
                     if no_pit and no_wumpus:
                         self.known_safe.add(position)
                         return True
                     elif no_pit is False or no_wumpus is False:
                         # Definitely unsafe
-                        self.known_unsafe.add(position)
+                        # self.known_unsafe.add(position)
                         return False
             except Exception as e:
                 print(f"KB inference error for {position}: {e}")
@@ -232,6 +234,7 @@ class WumpusWorldAStar:
             for x in range(1, self.width + 1):
                 pos = (y, x)
                 if pos not in self.visited_positions and self.is_position_safe(pos):
+                    print(f'pos: {pos}')
                     targets.append(pos)
 
         def needs_turn(from_pos, to_pos, current_direction):
@@ -817,6 +820,19 @@ class WumpusWorldAStar:
 
 def run_complete_wumpus_solution():
     """Run a complete automated solution of the Wumpus World"""
+
+    # Run single complete solution
+    # Run single complete solution
+    while True:
+        try:
+            advance_setting = input("Advanced Setting? (True/False): ")
+            if advance_setting in ('True', 'False'):
+                break
+        except Exception:
+            pass
+        print("Invalid input. Please enter True/False.")
+
+    flag = (advance_setting == 'True')
     
     print("="*60)
     print("COMPLETE A* WUMPUS WORLD SOLUTION")
@@ -825,7 +841,7 @@ def run_complete_wumpus_solution():
     # Setup
     random.seed(time.time())  # For reproducible results
     N = 6
-    env = WumpusEnvironment(N=N, K_wumpuses=2, pit_probability=0.2, advanced_setting=False)
+    env = WumpusEnvironment(N=N, K_wumpuses=2, pit_probability=0.2, advanced_setting=flag)
     
     # Initialize KB and agent
     kb = build_init_kb(N, env, env.is_advanced)
@@ -978,7 +994,7 @@ def run_multiple_scenarios(num_runs=3):
 
 
 if __name__ == "__main__":
-    # Run single complete solution
+    
     run_complete_wumpus_solution()
     
     # Uncomment to run multiple test scenarios
