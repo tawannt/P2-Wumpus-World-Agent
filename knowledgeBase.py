@@ -97,8 +97,8 @@ class KnowledgeBase:
                 if (arrow_travel[0] > 0 and arrow_travel[0] <= self.height and 
                         arrow_travel[1] > 0 and arrow_travel[1] <= self.width):
                     arrow_y, arrow_x = arrow_travel[:2]
-                    self += Or(Not(self.symbols[('Shoot', pos[0], pos[1], direction.direction, step)]), 
-                              Not(self.symbols[('Wumpus', arrow_y, arrow_x)]))
+                    # self += Or(Not(self.symbols[('Shoot', pos[0], pos[1], direction.direction, step)]), 
+                    #           Not(self.symbols[('Wumpus', arrow_y, arrow_x)]))
             self.last_shot = None
         else:
             for percept_type in [Glitter, Stench, Breeze, Bump]:
