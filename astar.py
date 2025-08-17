@@ -51,10 +51,12 @@ class WumpusWorldAStar:
         self.height = environment.height
         
         # Safety tracking
+        self.is_advanced = self.env.is_advanced
+        self.action_counts = self.env.action_counts
         self.known_safe = {(1, 1)}  # Start is always safe
         self.known_unsafe = set()
         self.percept_history = {}
-        self.visited_positions = {(1, 1)}
+        self.visited_positions = self.kb.visited.copy() if self.kb else {(1, 1)}
         
     def manhattan_distance(self, pos1: Tuple[int, int], pos2: Tuple[int, int]) -> int:
         """Calculate Manhattan distance heuristic"""
@@ -109,6 +111,14 @@ class WumpusWorldAStar:
         2. Logical inference (if KB available)
         3. Conservative heuristics - only safe if adjacent to visited area with NO danger signals
         """
+
+        if self.is_advanced and self.action_counts > 0 and self.action_counts % 5 == 0:
+            # In advanced mode, reset safety assumptions due to Wumpus movement
+            self.known_safe = {(y, x) for (y, x) in self.visited_positions}
+            self.known_unsafe = set()
+            print(f"Advanced mode: Reset safety due to potential Wumpus movement")
+
+
         # Already visited/known safe
         if position in self.visited_positions or position in self.known_safe:
             return True
