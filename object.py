@@ -1,4 +1,29 @@
 # Base class for objects in the Wumpus World
+
+import sys
+import datetime
+
+class Logger:
+    def __init__(self, filename):
+        self.console = sys.stdout
+        self.file = open(filename, 'a', encoding='utf-8')
+    
+    def write(self, message):
+        # Write to console
+        self.console.write(message)
+        # Write to file with timestamp
+        # timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.file.write(f'{message}')
+        self.file.flush()
+    
+    def flush(self):
+        self.console.flush()
+        self.file.flush()
+    
+    def __del__(self):
+        self.file.close()
+
+
 class Thing:
     position = tuple()
 

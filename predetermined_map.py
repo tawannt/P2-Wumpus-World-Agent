@@ -1,5 +1,6 @@
 
 # 5 predetermined maps of increasing difficulty
+
 PREDETERMINED_MAPS = [
 	{
 		'desc': 'Easy: No wumpus, no pits, gold at (6,6)',
@@ -48,15 +49,18 @@ def print_map_preview(map_data):
 		print("|".join(row))
 
 if __name__ == "__main__":
+	
 	import sys
 	import time
 	from environment import WumpusEnvironment
 	from knowledgeBase import build_init_kb
 	from agent import Explorer
 	from astar import WumpusWorldAStar
-	from object import Gold, Glitter
-	advance_setting = None
-	while True:
+	from object import Gold, Glitter, Logger
+import os
+    
+advance_setting = None
+while True:
 		print("\nChoose a predetermined map to preview and solve:")
 		for i, m in enumerate(PREDETERMINED_MAPS):
 			print(f"  {i+1}. {m['desc']}")
@@ -121,6 +125,7 @@ if __name__ == "__main__":
 				gy, gx = map_data['gold']
 				env.board[gy][gx].append(Gold())
 				env.board[gy][gx].append(Glitter())
+    			
 
 				# Initialize KB and agent
 				kb = build_init_kb(N, env)
@@ -130,6 +135,18 @@ if __name__ == "__main__":
 
 				# Create planner
 				planner = WumpusWorldAStar(env, kb)
+
+				file_name = "map" + str(choice) 
+				if (advance_setting == 'True'):
+					file_name += "_advanced"
+				file_name += ".txt"
+
+				#check if filename exists
+				if os.path.exists(file_name):
+					print(f"Log file {file_name} already exists.")
+					os.remove(file_name)
+				sys.stdout = Logger(file_name)
+
 
 				print("\nInitial board:")
 				env.print_board()
