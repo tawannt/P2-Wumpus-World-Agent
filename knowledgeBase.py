@@ -60,17 +60,6 @@ class KnowledgeBase:
                     self.clauses.add(to_cnf(Biconditional(self.symbols[('Breeze', y, x)], pit_consequents)))
 
     def update_action_sentence(self, agent, action, step):
-        if self.is_advanced and self.action_count > 0 and self.action_count % 5 == 0:
-            print('remove stench and not wumpus')
-            for (y, x) in list(self.visited):
-                if (y, x) != (1, 1):
-                    if f"{self.symbols[('Stench', y, x)].formula()}" in self.clause_formulas and \
-                            f"¬({self.symbols[('Wumpus', y, x)].formula()})" in self.clause_formulas:
-                        self.remove_clause(self.symbols[('Stench', y, x)])
-                        self.remove_clause(Not(self.symbols[('Wumpus', y, x)]))
-                        self.visited.remove((y, x))
-                        # self.clause_formulas.remove(f"{self.symbols[('Stench', y, x)].formula()}")
-                        # self.clause_formulas.remove(f"¬({self.symbols[('Wumpus', y, x)].formula()})")
             
 
         # actions = [
@@ -86,7 +75,21 @@ class KnowledgeBase:
         #     self.symbols[(a, )] = a
         #     if action == a:
         #         self.clauses.add(to_cnf(self.symbols[a.name]))
+
         self.action_count += 1
+
+        # Thực hiện xong sẽ biết là đã 5 action đã qua.
+        if self.is_advanced and self.action_count > 0 and self.action_count % 5 == 0:
+            print('remove stench and not wumpus')
+            for (y, x) in list(self.visited):
+                if (y, x) != (1, 1):
+                    if f"{self.symbols[('Stench', y, x)].formula()}" in self.clause_formulas and \
+                            f"¬({self.symbols[('Wumpus', y, x)].formula()})" in self.clause_formulas:
+                        self.remove_clause(self.symbols[('Stench', y, x)])
+                        self.remove_clause(Not(self.symbols[('Wumpus', y, x)]))
+                        self.visited.remove((y, x))
+                        # self.clause_formulas.remove(f"{self.symbols[('Stench', y, x)].formula()}")
+                        # self.clause_formulas.remove(f"¬({self.symbols[('Wumpus', y, x)].formula()})")
         
 
     def update_percept_sentence(self, pos, percepts):

@@ -147,8 +147,7 @@ class WumpusEnvironment:
         arrow_direction = Direction(agent.direction.direction)
         percepts = []
         random.seed(int(time.time()))
-        if(self.is_advanced == True and self.action_counts > 0  and self.action_counts % 5 == 0):
-            self.wumpus_move()
+        
 
         if isinstance(agent, Explorer) and self.in_danger(agent):
             return percepts  # Return empty percepts if agent is killed 
@@ -207,7 +206,11 @@ class WumpusEnvironment:
                         break
                     arrow_travel = arrow_direction.move_forward(arrow_travel)
                 agent.has_arrow = False
+                
         self.action_counts += 1
+        # Sau khi thực hiện hành động, kiểm tra đã đến lúc Wumpus di chuyển hay chưa?
+        if(self.is_advanced == True and self.action_counts > 0  and self.action_counts % 5 == 0):
+            self.wumpus_move()
         return percepts
 
 
