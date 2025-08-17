@@ -85,8 +85,12 @@ class WumpusWorldAStarAdvanced:
         self.visited_positions.add(position)
         self.known_safe.add(position)
         
+        print("qwerty")
+        print(self.env.action_counts)
+        print(self.env.is_advanced)
         
-        if self.env.action_counts % 5 > 1 and self.env.action_counts % 5 == 0 and self.env.is_advanced == True: #TODO: handle this
+        if (self.env.action_counts > 1) and (self.env.action_counts % 5 == 0) and (self.env.is_advanced == True): #TODO: handle this
+            print("Remove Wumpus and Stench clauses ------------------------")
             self.known_wumpus.clear()
             
             for pos, percept in self.percept_history.items():
@@ -101,7 +105,8 @@ class WumpusWorldAStarAdvanced:
                 #remove kb
                 self.kb.remove_clause(self.kb.symbols[('Stench', pos[0], pos[1])])
                 self.kb.remove_clause(Not(self.kb.symbols[('Wumpus', pos[0], pos[1])]))
-            
+                print("Remove Wumpus and Stench clauses")
+
             print("update world Updated")
 
             self.current_stench_positions.clear()
