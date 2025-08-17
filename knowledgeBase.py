@@ -5,13 +5,14 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class KnowledgeBase:
-    def __init__(self, knowledge=None, symbols=None, visited=None, N=8):
+    def __init__(self, knowledge=None, symbols=None, visited=None, N=8, is_advanced=False):
         self.width = N
         self.height = N
         self.visited = set(visited or [(1, 1)])
         self.symbols = symbols or {}
         self.clauses = And() if knowledge is None else (knowledge.clauses if isinstance(knowledge, KnowledgeBase) else And(to_cnf(knowledge)))
         self.clause_formulas = set()  # Track unique clause formulas
+        self.action_count = 0
 
         # Initialize symbols
         for x in range(1, self.width + 1):
@@ -24,6 +25,7 @@ class KnowledgeBase:
         self.clauses.add(to_cnf(Not(self.symbols[('Pit', 1, 1)])))
         self.add_temporal_sentence()
         self.last_shot = None
+        self.is_advanced = is_advanced
 
     def __iadd__(self, sentence):
         sentence_cnf = to_cnf(sentence)
@@ -58,6 +60,19 @@ class KnowledgeBase:
                     self.clauses.add(to_cnf(Biconditional(self.symbols[('Breeze', y, x)], pit_consequents)))
 
     def update_action_sentence(self, agent, action, step):
+        if self.is_advanced and self.action_count > 0 and self.action_count % 5 == 0:
+            print('remove stench and not wumpus')
+            for (y, x) in list(self.visited):
+                if (y, x) != (1, 1):
+                    if f"{self.symbols[('Stench', y, x)].formula()}" in self.clause_formulas and \
+                            f"¬({self.symbols[('Wumpus', y, x)].formula()})" in self.clause_formulas:
+                        self.remove_clause(self.symbols[('Stench', y, x)])
+                        self.remove_clause(Not(self.symbols[('Wumpus', y, x)]))
+                        self.visited.remove((y, x))
+                        # self.clause_formulas.remove(f"{self.symbols[('Stench', y, x)].formula()}")
+                        # self.clause_formulas.remove(f"¬({self.symbols[('Wumpus', y, x)].formula()})")
+            
+
         # actions = [
         #     move_forward(step),
         #     turn_left(step),
@@ -71,6 +86,8 @@ class KnowledgeBase:
         #     self.symbols[(a, )] = a
         #     if action == a:
         #         self.clauses.add(to_cnf(self.symbols[a.name]))
+        self.action_count += 1
+        
 
     def update_percept_sentence(self, pos, percepts):
         y, x = pos[:2]
@@ -97,14 +114,14 @@ class KnowledgeBase:
                 if any(isinstance(percept, percept_type) for percept in percepts):
                     if percept_type.__name__ == 'Stench' and f"¬({self.symbols[symbol_key].formula()})" in self.clause_formulas:
                         self.remove_clause(Not(self.symbols[symbol_key]))
-                        self.clause_formulas.remove( f"¬({self.symbols[symbol_key].formula()})")
+                        # self.clause_formulas.remove(f"¬({self.symbols[symbol_key].formula()})")
                     self += self.symbols[symbol_key]
                 else:
                     if percept_type.__name__ not in ['Bump', 'Glitter']:
                         if f"{self.symbols[symbol_key].formula()}" in self.clause_formulas:
                             self.remove_clause(self.symbols[symbol_key])
-                            self.clause_formulas.remove(f"{self.symbols[symbol_key].formula()}")
-                        self += Not(self.symbols[symbol_key])
+                            # self.clause_formulas.remove(f"{self.symbols[symbol_key].formula()}")
+                        # self += Not(self.symbols[symbol_key])
 
     def remove_clause(self, sentence):
         formula = to_cnf(sentence).formula()
@@ -118,8 +135,8 @@ class KnowledgeBase:
         return pl_resolution(self, query)
 
 
-def build_init_kb(N, environment):
-    kb = KnowledgeBase(N=N)  # Set single_wumpus=True for exactly one Wumpus
+def build_init_kb(N, environment, is_advanced=False):
+    kb = KnowledgeBase(N=N, is_advanced=is_advanced)  # Set single_wumpus=True for exactly one Wumpus
     percepts = environment.percept((1, 1))
     kb.update_percept_sentence((1, 1), percepts)
     return kb
